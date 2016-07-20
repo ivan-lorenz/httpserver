@@ -1,14 +1,17 @@
-package it;
+package org.simple.server;
 
 import com.sun.net.httpserver.HttpHandler;
-import org.simple.server.Context;
 import org.simple.server.controller.ServerHandler;
 import org.simple.server.controller.action.IServerAction;
 import org.simple.server.controller.action.ServerActionFactory;
 
 import java.util.Map;
 
-public class TestContext extends Context{
+/* RunContext is the dependency injection container for Production.
+ * It manages the creation of an specific http handler and its dependencies.
+ */
+public class RunContext extends Context {
+
     @Override
     public ISupplyContext supplyContext() {
         return new ISupplyContext() {
