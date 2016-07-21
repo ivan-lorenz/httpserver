@@ -8,7 +8,7 @@ import org.apache.http.util.EntityUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.simple.server.Context;
+import org.simple.server.application.Context;
 
 import java.io.IOException;
 
@@ -45,12 +45,19 @@ public class SimpleServerSpec {
     public void shouldAccessPage1() throws IOException {
         HttpResponse response = request("page1.html");
         assertEquals(200,response.getStatusLine().getStatusCode());
+        assertEquals("text/html", response.getEntity().getContentType().getValue());
         assertTrue(EntityUtils.toString(response.getEntity()).contains("Hello"));
     }
 
     @Test
     public void shouldNotFindPage4() throws IOException {
         HttpResponse response = request("page4.html");
+        assertEquals(404,response.getStatusLine().getStatusCode());
+    }
+
+    @Test
+    public void shouldNotFindFakePage1() throws IOException {
+        HttpResponse response = request("fakepage1.html");
         assertEquals(404,response.getStatusLine().getStatusCode());
     }
 }

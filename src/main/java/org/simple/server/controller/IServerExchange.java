@@ -18,4 +18,5 @@ public interface IServerExchange {
     public InputStream getRequestBody() throws IOException;
     public OutputStream getResponseBody() throws IOException;
     public void setStatus(int rCode, long responseLength)throws IOException;
+    public void close();
 }

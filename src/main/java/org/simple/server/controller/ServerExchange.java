@@ -48,4 +48,8 @@ public class ServerExchange implements IServerExchange {
     public void setStatus(int rCode, long responseLength) throws IOException {
         exchange.sendResponseHeaders(rCode, responseLength);
     }
+
+    public void close() {
+        exchange.close();
+    }
 }

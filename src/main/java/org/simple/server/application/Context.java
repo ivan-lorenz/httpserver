@@ -1,14 +1,10 @@
-package org.simple.server;
+package org.simple.server.application;
 
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
-import org.simple.server.controller.action.IServerAction;
-import org.simple.server.controller.action.PageAction;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.util.HashMap;
-import java.util.Map;
 
 /* Context is the abstract class implementing Dependency Injection Container technique
  * DI containers controlling the injection of dependencies manually are appropriate
@@ -18,18 +14,14 @@ import java.util.Map;
  */
 public abstract class Context {
 
-    // Router configuration for our server
-    // We map a URI path with a concrete action controller
-    private static Map<String, IServerAction> router = new HashMap<String, IServerAction>();
-    static {
-        router.put("/page1.html", new PageAction());
-    }
-
     // Our simple server
     private HttpServer server;
 
+    // Our server router
+    protected IServerRouter router = new ServerRouter();
+
     public interface ISupplyContext {
-        HttpHandler getHandler(Map<String, IServerAction> router);
+        HttpHandler getHandler(IServerRouter router);
     }
 
     // Context subclasses need to supply specific context, ex. Run or Test

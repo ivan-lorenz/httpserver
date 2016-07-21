@@ -1,8 +1,7 @@
 package org.simple.server.controller.action;
 
+import org.simple.server.application.IServerRouter;
 import org.simple.server.controller.IServerExchange;
-
-import java.util.Map;
 
 /* ServerActionFactory implements Factory Method pattern.
  * It provides a creational method which return an specific action implementation
@@ -11,10 +10,10 @@ import java.util.Map;
 public class ServerActionFactory {
 
     // Router configuration
-    private Map<String, IServerAction> router;
+    private IServerRouter router;
 
     // Router configuration is injected as a dependency
-    public ServerActionFactory(Map<String, IServerAction> router) {
+    public ServerActionFactory(IServerRouter router) {
         this.router = router;
     }
 
@@ -23,4 +22,5 @@ public class ServerActionFactory {
         IServerAction action = router.get(exchange.getRequestURI().getPath());
         return null != action ? action : new NotFoundAction();
     }
+
 }
