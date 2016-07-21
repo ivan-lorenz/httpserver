@@ -19,7 +19,7 @@ public class ServerActionFactory {
 
     // Implementation of Factory Method
     public IServerAction getAction(IServerExchange exchange) {
-        IServerAction action = router.get(exchange.getRequestURI().getPath());
+        IServerAction action = router.get(exchange);
         return null != action ? action : new NotFoundAction();
     }
 

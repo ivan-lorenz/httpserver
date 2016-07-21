@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+</head>
+<style type="text/css">
+form {
+    margin: 0 auto;
+    width: 400px;
+    padding: 1em;
+    border: 1px solid #CCC;
+    border-radius: 1em;
+}
+</style>
+<body>
+<h1>Login</h1>
+<form action="/authenticate" method="post">
+    <div>
+        <label for="user">User:</label>
+        <input type="text" id="user" name="user_name" />
+    </div>
+    <div>
+        <label for="pass">Password:</label>
+        <input type="password" id="pass" name="user_password" />
+    </div>
+    <div class="button">
+        <button type="submit">Sign in</button>
+    </div>
+</form>
+</body>
+</html>

@@ -7,10 +7,10 @@ import java.net.URI;
 
 import static org.simple.server.controller.action.helper.ActionHelper.actionTool;
 
-/* PageAction is a IServerAction implementation to serve our static pages.
+/*
  *
  */
-public class PageAction implements IServerAction {
+public class LoginAction implements IServerAction {
 
     @Override
     public void execute(IServerExchange exchange) throws IOException {
@@ -20,6 +20,6 @@ public class PageAction implements IServerAction {
 
     @Override
     public boolean isPublic() {
-        return false;
+        return true;
     }
 }

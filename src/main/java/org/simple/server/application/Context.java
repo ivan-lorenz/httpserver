@@ -1,7 +1,10 @@
 package org.simple.server.application;
 
+import com.sun.net.httpserver.HttpContext;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
+import org.simple.server.controller.ServerAuthenticator;
+import org.simple.server.model.repository.ServerRepository;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -30,13 +33,13 @@ public abstract class Context {
     // Start listening on a port
     public void start() throws IOException {
         server = HttpServer.create(new InetSocketAddress(8001), 0);
-        server.createContext("/", supplyContext().getHandler(router));
+        HttpContext context = server.createContext("/", supplyContext().getHandler(router));
+        context.setAuthenticator(new ServerAuthenticator(router,"simple-server", new ServerRepository("admin","admin")));
         server.setExecutor(null);
         server.start();
     }
 
     // Stop the server
-    // Basically for testing purposes.
     public void stop() {
         if (null != server) server.stop(0);
     }

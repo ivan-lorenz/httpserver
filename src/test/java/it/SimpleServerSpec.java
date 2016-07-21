@@ -3,6 +3,10 @@ package it;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.params.ClientPNames;
+import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 import org.junit.AfterClass;
@@ -11,6 +15,8 @@ import org.junit.Test;
 import org.simple.server.application.Context;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -19,10 +25,33 @@ public class SimpleServerSpec {
 
     public static Context context;
 
-    public static HttpResponse request(String path) throws IOException {
-        HttpClient client =  HttpClientBuilder.create().build();
-        HttpGet request = new HttpGet("http://localhost:8001/" + path);
-        return client.execute(request);
+    public static HttpResponse request(String path) {
+        return request(path, "GET", null, null);
+    }
+
+    public static HttpResponse request(String path, String method, String body, Map<String, String> headers)  {
+        try {
+            HttpClient client =  HttpClientBuilder.create().disableRedirectHandling().build();
+            String uri = "http://localhost:8001/" + path;
+            HttpUriRequest request = null;
+            switch (method) {
+                case "GET":
+                    request = new HttpGet(uri);
+                    break;
+                case "POST":
+                    request = new HttpPost(uri);
+                    ((HttpPost) request).setHeader("Content-Type","application/x-www-form-urlencoded");
+                    if (null != body)
+                        ((HttpPost) request).setEntity(new ByteArrayEntity(body.getBytes("UTF-8")));
+                    break;
+                default:
+                    throw new RuntimeException("Http verb not known.");
+            }
+            return client.execute(request);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     @BeforeClass
@@ -37,27 +66,47 @@ public class SimpleServerSpec {
     }
 
     @Test
-    public void shouldCheckBootstrap() throws IOException {
+    public void shouldCheckBootstrap() {
         assertEquals(404,request("").getStatusLine().getStatusCode());
     }
 
     @Test
     public void shouldAccessPage1() throws IOException {
         HttpResponse response = request("page1.html");
-        assertEquals(200,response.getStatusLine().getStatusCode());
-        assertEquals("text/html", response.getEntity().getContentType().getValue());
-        assertTrue(EntityUtils.toString(response.getEntity()).contains("Hello"));
+        assertEquals(301,response.getStatusLine().getStatusCode());
+        assertEquals("login.html",response.getFirstHeader("Location").getValue());
     }
 
     @Test
-    public void shouldNotFindPage4() throws IOException {
+    public void shouldNotFindPage4() {
         HttpResponse response = request("page4.html");
         assertEquals(404,response.getStatusLine().getStatusCode());
     }
 
     @Test
-    public void shouldNotFindFakePage1() throws IOException {
+    public void shouldNotFindFakePage1() {
         HttpResponse response = request("fakepage1.html");
         assertEquals(404,response.getStatusLine().getStatusCode());
     }
+
+    @Test
+    public void shouldAccessLogin() {
+        HttpResponse response = request("login.html");
+        assertEquals(200,response.getStatusLine().getStatusCode());
+    }
+
+    @Test
+    public void shouldNotAuthorizeAccess() {
+        HttpResponse response = request("authorize","POST", "user_name=user1&user_password=user1", null);
+        assertEquals(401,response.getStatusLine().getStatusCode());
+    }
+
+    @Test
+    public void shouldAccessAPI() {
+        Map<String, String> headers = new HashMap<>();
+        headers.put("Authorization","Basic YWRtaW47YWRtaW4=");
+        HttpResponse response = request("api/user", "POST", "user_name=user1&user_password=user1&role=PAGE_1", headers);
+        assertEquals(200,response.getStatusLine().getStatusCode());
+    }
+
 }

@@ -1,4 +1,4 @@
-package org.simple.server.controller.action;
+package org.simple.server.controller.action.helper;
 
 import com.sun.net.httpserver.Headers;
 
@@ -9,10 +9,10 @@ import java.io.OutputStream;
 /* ActionHelper is an utility class for Actions following DRY principle
  *
  */
-class ActionHelper {
+public class ActionHelper {
 
     // Helper method to copy our static files to the server output stream.
-    static ISendFile sendFile = (exchange, resource, status) -> {
+    public static ISendFile actionTool = (exchange, resource, status) -> {
             int count = 0;
 
             InputStream is = ActionHelper.class.getResourceAsStream(resource);
@@ -29,7 +29,7 @@ class ActionHelper {
 
     private static int stream(InputStream is, OutputStream os) throws IOException {
         final byte[] buffer = new byte[4096];
-        int count = 0;
+        int count;
         int total = 0;
         while ((count = is.read(buffer)) >= 0) {
             os.write(buffer,0,count);
