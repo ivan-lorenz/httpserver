@@ -47,4 +47,10 @@ public class SimpleServerSpec {
         assertEquals(200,response.getStatusLine().getStatusCode());
         assertTrue(EntityUtils.toString(response.getEntity()).contains("Hello"));
     }
+
+    @Test
+    public void shouldNotFindPage4() throws IOException {
+        HttpResponse response = request("page4.html");
+        assertEquals(404,response.getStatusLine().getStatusCode());
+    }
 }
