@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static org.simple.server.controller.action.ServerAction.*;
+import static org.simple.server.controller.action.ServerActionHelper.*;
 
 /*
  *

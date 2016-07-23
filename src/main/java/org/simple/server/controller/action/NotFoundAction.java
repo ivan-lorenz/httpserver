@@ -4,7 +4,7 @@ import org.simple.server.controller.IServerExchange;
 
 import java.io.IOException;
 
-import static org.simple.server.controller.action.ServerAction.sendFile;
+import static org.simple.server.controller.action.ServerActionHelper.sendFile;
 
 /* NotFoundAction is a IServerAction implementation for URI requests not mapped
  * in the router configuration.

@@ -5,7 +5,7 @@ import org.simple.server.controller.IServerExchange;
 import java.io.IOException;
 import java.net.URI;
 
-import static org.simple.server.controller.action.ServerAction.sendFile;
+import static org.simple.server.controller.action.ServerActionHelper.sendFile;
 
 /*
  *

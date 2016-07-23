@@ -5,31 +5,33 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.client.params.ClientPNames;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.util.EntityUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.simple.server.application.Context;
+import org.simple.server.model.ServerRole;
+import org.simple.server.model.repository.IServerRepository;
+import org.simple.server.model.repository.ServerRepository;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 public class SimpleServerSpec {
 
-    public static Context context;
 
-    public static HttpResponse request(String path) {
+    private static TestContext context;
+    private static IServerRepository repository;
+
+    private static HttpResponse request(String path) {
         return request(path, "GET", null, null);
     }
 
-    public static HttpResponse request(String path, String method, String body, Map<String, String> headers)  {
+    private static HttpResponse request(String path, String method, String body, Map<String, String> headers)  {
         try {
             HttpClient client =  HttpClientBuilder.create().disableRedirectHandling().build();
             String uri = "http://localhost:8001/" + path;
@@ -58,13 +60,14 @@ public class SimpleServerSpec {
 
     @BeforeClass
     public static void setup() throws IOException {
-        context = new TestContext();
+        repository = new ServerRepository("admin","admin");
+        context = new TestContext(repository);
         context.start();
     }
 
     @AfterClass
     public static void tearDown() {
-        context.stop();
+        context.stop(0);
     }
 
     @Test
@@ -112,7 +115,7 @@ public class SimpleServerSpec {
     }
 
     @Test
-    public void shouldAccessAPI() {
+    public void shouldCreateUser() {
         Map<String, String> headers = new HashMap<>();
         headers.put("Authorization","Basic YWRtaW46YWRtaW4=");
         headers.put("Content-Type","application/x-www-form-urlencoded");

@@ -4,7 +4,9 @@ import com.sun.net.httpserver.HttpContext;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import org.simple.server.controller.ServerAuthenticator;
+import org.simple.server.controller.ServerHandler;
 import org.simple.server.controller.action.*;
+import org.simple.server.model.repository.IServerRepository;
 import org.simple.server.model.repository.ServerRepository;
 
 import java.io.IOException;
@@ -23,26 +25,39 @@ public abstract class Context {
     // Our simple server
     private HttpServer server;
 
+    // Router configuration for our server
+    // We map a URI path and method with a concrete action controller
+    private Map<String, ServerScope> routerConfiguration =
+        new HashMap<String, ServerScope>() {{
+            put("GET/login.html", new ServerScope(ServerAction.LOGIN, true));
+            put("GET/page[1-3]{1}.html$", new ServerScope(ServerAction.PAGE, false));
+            put("POST/authorize$", new ServerScope(ServerAction.AUTHORIZE, true));
+            put("(POST|DELETE|PUT)/api/user$", new ServerScope(ServerAction.USERAPI, false));
+        }};
+
+    // Interface to supply context that subclasses must implement.
     protected interface ISupplyContext {
-        HttpHandler getHandler(IServerRouter router);
-        IServerRouter getRouter();
+        IServerRepository getRepository();
+        String getRealm();
     }
 
     // Context subclasses need to supply specific context, ex. Run or Test
     protected abstract ISupplyContext supplyContext();
 
+
     // Start listening on a port
     public void start() throws IOException {
         server = HttpServer.create(new InetSocketAddress(8001), 0);
-        HttpContext context = server.createContext("/", supplyContext().getHandler(supplyContext().getRouter()));
-        context.setAuthenticator(new ServerAuthenticator(supplyContext().getRouter(),"simple-server", new ServerRepository("admin","admin")));
+        IServerRouter router = new ServerRouter(routerConfiguration);
+        HttpContext context = server.createContext("/", new ServerHandler(new ServerActionFactory(router,supplyContext().getRepository())));
+        context.setAuthenticator(new ServerAuthenticator(router,supplyContext().getRealm(), supplyContext().getRepository()));
         server.setExecutor(null);
         server.start();
     }
 
     // Stop the server
-    public void stop() {
-        if (null != server) server.stop(0);
+    public void stop(int delay) {
+        if (null != server) server.stop(delay);
     }
 
 
