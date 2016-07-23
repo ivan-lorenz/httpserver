@@ -5,14 +5,13 @@ import org.simple.server.model.ServerRole;
 import org.simple.server.model.repository.IServerRepository;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import static org.simple.server.controller.action.ServerActionHelper.*;
 
-/*
- *
+/* UserApiAction is the REST API controller. An authenticated admin user can create,
+ * modify anddelete users from the user store.
  */
 public class UserApiAction implements IServerAction {
 
@@ -20,13 +19,8 @@ public class UserApiAction implements IServerAction {
     private IServerRepository repository;
 
     // Names of mandatoryParameters to update a user. Add "password" for user creation.
-    private static final String userParam = "user_name";
-    private static final String passwordParam = "user_password";
+    private static final String passwordParam = "password";
     private static final String roleParam = "role";
-    private static List<String> mandatoryParameters = new ArrayList<String>() {{
-        add(userParam);
-        add(roleParam);
-    }};
 
     public UserApiAction(IServerRepository repository) {
         this.repository = repository;
@@ -38,6 +32,12 @@ public class UserApiAction implements IServerAction {
             case "POST":
                 createUser(exchange);
                 break;
+            case "DELETE":
+                deleteUser(exchange);
+                break;
+            case "PUT":
+                updateUser(exchange);
+                break;
             default:
                 exchange.setStatus(405,-1);
                 exchange.close();
@@ -45,26 +45,52 @@ public class UserApiAction implements IServerAction {
     }
 
     private void createUser(IServerExchange exchange) throws IOException {
-        if (!isWwwFormUrlencoded(exchange)) {
-            sendBadRequestResponse("Invalid content type. Rest api must use application/x-www-form-urlencoded", exchange);
-        } else {
-            Map<String, String> params = getWwwFormUrlencodedBody(exchange);
 
-            if (null == params || !(params.keySet().containsAll(mandatoryParameters) && params.containsKey(passwordParam))) {
-                sendBadRequestResponse("Invalid parameters. Please supply user name, password and role.", exchange);
-            } else {
-                List<ServerRole> roles = getRoles(params.get(roleParam));
-                String user = params.get(userParam);
-                String password = params.get(passwordParam);
+        Map<String, String> params = getQueryParams(exchange);
 
-                if (roles.isEmpty() || null == user || user.isEmpty() || null == password || password.isEmpty())
-                    sendBadRequestResponse("Missing parameters",exchange);
-                else {
-                    repository.createUser(user,password,roles);
-                    exchange.setStatus(200,-1);
-                }
-            }
+        List<ServerRole> roles = getRoles(params.get(roleParam));
+        String user = getUserFromRequest(exchange);
+        String password = params.get(passwordParam);
+
+        if (roles.isEmpty() || null == user || user.isEmpty() || null == password || password.isEmpty())
+            sendErrorResponse(400,"Wrong parameters",exchange);
+        else {
+            repository.createUser(user,password,roles);
+            exchange.setStatus(200,-1);
         }
+        exchange.close();
+    }
+
+    private void deleteUser(IServerExchange exchange) throws IOException {
+        String user = getUserFromRequest(exchange);
+
+        if (null == user)
+            sendErrorResponse(400,"Unable to find the user",exchange);
+        else if (!repository.deleteUser(user).isPresent())
+            sendErrorResponse(404,"User not found",exchange);
+        else
+            exchange.setStatus(200, -1);
+
+        exchange.close();
+    }
+
+    private void updateUser(IServerExchange exchange) throws IOException {
+        String user = getUserFromRequest(exchange);
+
+        Map<String, String> params = getQueryParams(exchange);
+
+        if (null == user || null == params)
+            sendErrorResponse(400,"Wrong parameters",exchange);
+        else {
+            List<ServerRole> roles = getRoles(params.get(roleParam));
+            if (null == roles || roles.isEmpty())
+                sendErrorResponse(400,"Wrong parameters",exchange);
+            else if (!repository.updateUser(user,roles).isPresent()) {
+                sendErrorResponse(404,"User not found",exchange);
+            } else
+                exchange.setStatus(200, -1);
+        }
+
         exchange.close();
     }
 

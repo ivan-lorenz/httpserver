@@ -12,4 +12,7 @@ import java.util.Optional;
 public interface IServerRepository {
     Optional<IServerUser> getCredentials(String user, String password);
     IServerUser createUser(String user, String password, List<ServerRole> roles);
+    Optional<IServerUser> deleteUser(String user);
+    Optional<IServerUser> updateUser(String user, List<ServerRole> roles);
+    void deleteAll();
 }

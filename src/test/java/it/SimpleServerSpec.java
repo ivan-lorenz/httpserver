@@ -2,14 +2,10 @@ package it;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.methods.*;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 import org.simple.server.model.ServerRole;
 import org.simple.server.model.repository.IServerRepository;
 import org.simple.server.model.repository.ServerRepository;
@@ -35,7 +31,7 @@ public class SimpleServerSpec {
         try {
             HttpClient client =  HttpClientBuilder.create().disableRedirectHandling().build();
             String uri = "http://localhost:8001/" + path;
-            HttpUriRequest request = null;
+            HttpUriRequest request;
             switch (method) {
                 case "GET":
                     request = new HttpGet(uri);
@@ -44,6 +40,18 @@ public class SimpleServerSpec {
                     request = new HttpPost(uri);
                     if (null != body)
                         ((HttpPost) request).setEntity(new ByteArrayEntity(body.getBytes("UTF-8")));
+                    if (null != headers && !headers.isEmpty())
+                        for (Map.Entry<String, String> h : headers.entrySet())
+                            request.addHeader(h.getKey(), h.getValue());
+                    break;
+                case "DELETE":
+                    request = new HttpDelete(uri);
+                    if (null != headers && !headers.isEmpty())
+                        for (Map.Entry<String, String> h : headers.entrySet())
+                            request.addHeader(h.getKey(), h.getValue());
+                    break;
+                case "PUT":
+                    request = new HttpPut(uri);
                     if (null != headers && !headers.isEmpty())
                         for (Map.Entry<String, String> h : headers.entrySet())
                             request.addHeader(h.getKey(), h.getValue());
@@ -68,6 +76,11 @@ public class SimpleServerSpec {
     @AfterClass
     public static void tearDown() {
         context.stop(0);
+    }
+
+    @After
+    public void teardown() {
+        repository.deleteAll();
     }
 
     @Test
@@ -108,18 +121,47 @@ public class SimpleServerSpec {
 
     @Test
     public void shouldFailAccessingAPI() {
+        repository.createUser("admin","admin", new ArrayList<ServerRole>(){{ add(ServerRole.ADMIN);}});
         Map<String, String> headers = new HashMap<>();
+
+        //Basic Authentication for user "admin"
         headers.put("Authorization","Basic YWRtaW46YWRtaW4=");
-        HttpResponse response = request("api/user", "POST", "user_name=user1&user_password=user1&role=PAGE_1", headers);
+        HttpResponse response = request("api/user/user1?role=PAGE_1", "POST", null, headers);
         assertEquals(400,response.getStatusLine().getStatusCode());
     }
 
     @Test
     public void shouldCreateUser() {
+        repository.createUser("admin","admin", new ArrayList<ServerRole>(){{ add(ServerRole.ADMIN);}});
         Map<String, String> headers = new HashMap<>();
+
+        //Basic Authentication for user "admin"
         headers.put("Authorization","Basic YWRtaW46YWRtaW4=");
-        headers.put("Content-Type","application/x-www-form-urlencoded");
-        HttpResponse response = request("api/user", "POST", "user_name=user1&user_password=user1&role=PAGE_1", headers);
+        HttpResponse response = request("api/user/user1?password=user1&role=PAGE_1", "POST", null , headers);
+        assertEquals(200,response.getStatusLine().getStatusCode());
+    }
+
+    @Test
+    public void shouldDeleteUser() {
+        repository.createUser("admin","admin", new ArrayList<ServerRole>(){{ add(ServerRole.ADMIN);}});
+        repository.createUser("user1","user1", new ArrayList<ServerRole>(){{ add(ServerRole.PAGE1);}});
+        Map<String, String> headers = new HashMap<>();
+
+        //Basic Authentication for user "admin"
+        headers.put("Authorization","Basic YWRtaW46YWRtaW4=");
+        HttpResponse response = request("api/user/user1", "DELETE", null, headers);
+        assertEquals(200,response.getStatusLine().getStatusCode());
+    }
+
+    @Test
+    public void shouldUpdateUser() {
+        repository.createUser("admin","admin", new ArrayList<ServerRole>(){{ add(ServerRole.ADMIN);}});
+        repository.createUser("user1","user1", new ArrayList<ServerRole>(){{ add(ServerRole.PAGE1);}});
+        Map<String, String> headers = new HashMap<>();
+
+        //Basic Authentication for user "admin"
+        headers.put("Authorization","Basic YWRtaW46YWRtaW4=");
+        HttpResponse response = request("api/user/user1?role=PAGE_2,PAGE_3", "PUT", null, headers);
         assertEquals(200,response.getStatusLine().getStatusCode());
     }
 

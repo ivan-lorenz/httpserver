@@ -32,7 +32,7 @@ public abstract class Context {
             put("GET/login.html", new ServerScope(ServerAction.LOGIN, true));
             put("GET/page[1-3]{1}.html$", new ServerScope(ServerAction.PAGE, false));
             put("POST/authorize$", new ServerScope(ServerAction.AUTHORIZE, true));
-            put("(POST|DELETE|PUT)/api/user$", new ServerScope(ServerAction.USERAPI, false));
+            put("(POST|DELETE|PUT)/api/user/(.+)", new ServerScope(ServerAction.USERAPI, false));
         }};
 
     // Interface to supply context that subclasses must implement.

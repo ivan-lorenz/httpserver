@@ -6,6 +6,8 @@ import org.simple.server.model.ServerRole;
 
 import java.io.*;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /* ServerActionHelper is an utility class for Actions following DRY principle
  *
@@ -64,10 +66,39 @@ class ServerActionHelper {
     }
 
 
-    static void sendBadRequestResponse(String message, IServerExchange exchange) throws IOException {
-        exchange.setStatus(400, message.length());
+    static void sendErrorResponse(int status, String message, IServerExchange exchange) throws IOException {
+        exchange.setStatus(status, message.length());
         OutputStream os = exchange.getResponseBody();
         os.write(message.getBytes("UTF-8"));
+    }
+
+    private static Pattern userPattern = Pattern.compile("/api/user/(.+)$");
+
+    static String getUserFromRequest(IServerExchange exchange) {
+        Matcher matcher = userPattern.matcher(exchange.getRequestURI().getPath());
+
+        if (matcher.find())
+            return matcher.group(1);
+
+        return null;
+    }
+
+    static Map<String, String> getQueryParams(IServerExchange exchange) {
+        HashMap<String, String> map = new HashMap<>();
+
+        String query = exchange.getRequestURI().getQuery();
+
+        for (String parameter : query.split("&")) {
+            String[] keyValue = parameter.split("=");
+
+            if (keyValue.length != 2)
+                return null;
+
+            map.put(keyValue[0], keyValue[1]);
+
+        }
+
+        return map;
     }
 
     private static int stream(InputStream is, OutputStream os) throws IOException {

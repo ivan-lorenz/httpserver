@@ -38,4 +38,29 @@ public class ServerRepository implements IServerRepository {
         userStore.put(user, repUser);
         return new ServerUser(user,roles);
     }
+
+    @Override
+    public Optional<IServerUser> deleteUser(String user) {
+        IRepositoryUser repoUser = userStore.remove(user);
+        if (null == repoUser)
+            return Optional.empty();
+
+        return Optional.of(new ServerUser(user,repoUser.getRoles()));
+    }
+
+    @Override
+    public Optional<IServerUser> updateUser(String user, List<ServerRole> roles) {
+        IRepositoryUser repoUser = userStore.get(user);
+
+        if (null == repoUser)
+            return Optional.empty();
+
+        userStore.put(user, new RepositoryUser(user, roles, repoUser.getPassword()));
+        return Optional.of(new ServerUser(user, roles));
+    }
+
+    @Override
+    public void deleteAll() {
+        userStore.clear();
+    }
 }
