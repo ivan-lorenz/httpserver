@@ -10,7 +10,7 @@ import java.util.List;
  * and must not be leaked to other layers such as controllers or views in order to
  * maintain the password hidden.
  */
-interface IRepositoryUSer {
+interface IRepositoryUser {
     String getUser();
     List<ServerRole> getRoles();
     String getPassword();

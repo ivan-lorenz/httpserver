@@ -31,10 +31,10 @@ public class ServerAuthenticator extends Authenticator {
 
         @Override
         public boolean checkCredentials(String s, String s1) {
-            IServerUser user = repository.getCredentials(s, s1);
-            if (null != user && user.isAdmin())
-                return true;
-            return false;
+            return repository
+                    .getCredentials(s, s1)
+                    .map(IServerUser::isAdmin)
+                    .orElse(false);
         }
     }
 
@@ -65,7 +65,7 @@ public class ServerAuthenticator extends Authenticator {
         if (router.isPublic(exchange) || router.isNotFound(exchange))
             return new Success(guest);
 
-        if (isAuthenticated(httpExchange)) {
+        if (isAuthenticated(exchange)) {
 
             // Manage BasicAuthorization for API requests
             return basicAuthenticator.authenticate(httpExchange);
@@ -78,8 +78,8 @@ public class ServerAuthenticator extends Authenticator {
         }
     }
 
-    private boolean isAuthenticated(HttpExchange httpExchange) {
-        for (String header: httpExchange.getRequestHeaders().keySet()) {
+    private boolean isAuthenticated(IServerExchange exchange) {
+        for (String header: exchange.getRequestHeaders().keySet()) {
             if (Objects.equals(header,"Authorization") || Objects.equals(header,"Set-Cookie"))
                 return true;
         }

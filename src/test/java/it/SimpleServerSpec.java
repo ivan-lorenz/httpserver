@@ -40,9 +40,11 @@ public class SimpleServerSpec {
                     break;
                 case "POST":
                     request = new HttpPost(uri);
-                    ((HttpPost) request).setHeader("Content-Type","application/x-www-form-urlencoded");
                     if (null != body)
                         ((HttpPost) request).setEntity(new ByteArrayEntity(body.getBytes("UTF-8")));
+                    if (null != headers && !headers.isEmpty())
+                        for (Map.Entry<String, String> h : headers.entrySet())
+                            request.addHeader(h.getKey(), h.getValue());
                     break;
                 default:
                     throw new RuntimeException("Http verb not known.");
@@ -102,9 +104,18 @@ public class SimpleServerSpec {
     }
 
     @Test
+    public void shouldFailAccessingAPI() {
+        Map<String, String> headers = new HashMap<>();
+        headers.put("Authorization","Basic YWRtaW46YWRtaW4=");
+        HttpResponse response = request("api/user", "POST", "user_name=user1&user_password=user1&role=PAGE_1", headers);
+        assertEquals(400,response.getStatusLine().getStatusCode());
+    }
+
+    @Test
     public void shouldAccessAPI() {
         Map<String, String> headers = new HashMap<>();
-        headers.put("Authorization","Basic YWRtaW47YWRtaW4=");
+        headers.put("Authorization","Basic YWRtaW46YWRtaW4=");
+        headers.put("Content-Type","application/x-www-form-urlencoded");
         HttpResponse response = request("api/user", "POST", "user_name=user1&user_password=user1&role=PAGE_1", headers);
         assertEquals(200,response.getStatusLine().getStatusCode());
     }

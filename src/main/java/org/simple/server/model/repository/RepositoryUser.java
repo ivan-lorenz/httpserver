@@ -7,7 +7,7 @@ import java.util.List;
 /*
  *
  */
-class RepositoryUser implements IRepositoryUSer {
+class RepositoryUser implements IRepositoryUser {
 
     private final String user;
     private final List<ServerRole> roles;

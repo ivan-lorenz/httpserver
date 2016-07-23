@@ -12,7 +12,7 @@ import java.io.IOException;
  */
 public class ServerHandler implements HttpHandler {
 
-    // Action factory
+    // ServerAction factory
     private final ServerActionFactory actionFactory;
 
     public ServerHandler(ServerActionFactory actionFactory) {

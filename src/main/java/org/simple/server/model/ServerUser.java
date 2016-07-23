@@ -36,12 +36,4 @@ public class ServerUser implements IServerUser {
         return this.roles;
     }
 
-    @Override
-    public boolean isAdmin() {
-        for (ServerRole role: roles) {
-            if (role == ServerRole.ADMIN)
-                return true;
-        }
-        return false;
-    }
 }

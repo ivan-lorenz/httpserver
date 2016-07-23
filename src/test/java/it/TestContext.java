@@ -1,19 +1,7 @@
 package it;
 
-import com.sun.net.httpserver.HttpHandler;
-import org.simple.server.application.Context;
-import org.simple.server.application.IServerRouter;
-import org.simple.server.controller.ServerHandler;
-import org.simple.server.controller.action.ServerActionFactory;
+import org.simple.server.application.RunContext;
 
-public class TestContext extends Context{
-    @Override
-    public ISupplyContext supplyContext() {
-        return new ISupplyContext() {
-            @Override
-            public HttpHandler getHandler(IServerRouter router) {
-                return new ServerHandler(new ServerActionFactory(router));
-            }
-        };
-    }
+public class TestContext extends RunContext {
+
 }

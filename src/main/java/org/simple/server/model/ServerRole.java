@@ -1,5 +1,7 @@
 package org.simple.server.model;
 
+import java.util.Optional;
+
 /*
  *
  */
@@ -18,5 +20,16 @@ public enum ServerRole {
 
     public String getValue() {
         return this.value;
+    }
+
+    public static Optional<ServerRole> fromString(String text) {
+        if (text != null) {
+            for (ServerRole role : ServerRole.values()) {
+                if (text.equalsIgnoreCase(role.getValue())) {
+                    return Optional.of(role);
+                }
+            }
+        }
+        return Optional.empty();
     }
 }

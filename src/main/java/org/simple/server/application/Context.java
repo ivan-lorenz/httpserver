@@ -4,10 +4,13 @@ import com.sun.net.httpserver.HttpContext;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import org.simple.server.controller.ServerAuthenticator;
+import org.simple.server.controller.action.*;
 import org.simple.server.model.repository.ServerRepository;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.util.HashMap;
+import java.util.Map;
 
 /* Context is the abstract class implementing Dependency Injection Container technique
  * DI containers controlling the injection of dependencies manually are appropriate
@@ -20,21 +23,19 @@ public abstract class Context {
     // Our simple server
     private HttpServer server;
 
-    // Our server router
-    protected IServerRouter router = new ServerRouter();
-
-    public interface ISupplyContext {
+    protected interface ISupplyContext {
         HttpHandler getHandler(IServerRouter router);
+        IServerRouter getRouter();
     }
 
     // Context subclasses need to supply specific context, ex. Run or Test
-    public abstract ISupplyContext supplyContext();
+    protected abstract ISupplyContext supplyContext();
 
     // Start listening on a port
     public void start() throws IOException {
         server = HttpServer.create(new InetSocketAddress(8001), 0);
-        HttpContext context = server.createContext("/", supplyContext().getHandler(router));
-        context.setAuthenticator(new ServerAuthenticator(router,"simple-server", new ServerRepository("admin","admin")));
+        HttpContext context = server.createContext("/", supplyContext().getHandler(supplyContext().getRouter()));
+        context.setAuthenticator(new ServerAuthenticator(supplyContext().getRouter(),"simple-server", new ServerRepository("admin","admin")));
         server.setExecutor(null);
         server.start();
     }
