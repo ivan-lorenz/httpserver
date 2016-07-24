@@ -1,9 +1,6 @@
 package org.simple.server.controller;
 
-import com.sun.net.httpserver.Authenticator;
-import com.sun.net.httpserver.BasicAuthenticator;
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpPrincipal;
+import com.sun.net.httpserver.*;
 import org.simple.server.application.IClock;
 import org.simple.server.application.IServerRouter;
 import org.simple.server.model.IServerUser;
@@ -91,8 +88,9 @@ public class ServerAuthenticator extends Authenticator {
         }
 
         // Login redirect
-        httpExchange.getResponseHeaders().set("Location","login.html");
-        return new Retry(301);
+        Headers headers = httpExchange.getResponseHeaders();
+        headers.set("Location","login.html?from="+httpExchange.getRequestURI().getPath());
+        return new Retry(307);
     }
 
     private Authenticator.Result cookieAuthenticate(HttpExchange exchange, String cookie) {

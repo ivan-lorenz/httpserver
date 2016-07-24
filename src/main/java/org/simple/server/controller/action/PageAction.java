@@ -15,7 +15,7 @@ public class PageAction implements IServerAction {
     @Override
     public void execute(IServerExchange exchange) throws IOException {
         URI uri = exchange.getRequestURI();
-        replaceTokenAndSend(exchange, uri.getPath(),exchange.getUser());
+        replaceTokenAndSend(exchange, uri.getPath(),"%user%", exchange.getUser());
     }
 
 }

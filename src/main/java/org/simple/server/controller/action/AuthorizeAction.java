@@ -1,5 +1,6 @@
 package org.simple.server.controller.action;
 
+import com.sun.net.httpserver.Authenticator;
 import org.simple.server.controller.IServerExchange;
 import org.simple.server.model.IServerSession;
 import org.simple.server.model.repository.IServerRepository;
@@ -66,10 +67,21 @@ class AuthorizeAction implements IServerAction {
                     .put("Set-Cookie", new ArrayList<String>() {{
                         add("SESSION=" + session.getSession());
                     }});
-            exchange.setStatus(200, -1);
+            doRedirect(exchange);
             return true;
         } catch (IOException e) {
             return false;
+        }
+    }
+
+    private void doRedirect(IServerExchange exchange) throws IOException {
+        Map<String, String> params =  getQueryParams(exchange);
+
+        if (null == params|| null == params.get("from"))
+            exchange.setStatus(200, -1);
+        else {
+            exchange.getResponseHeaders().put("Location", new ArrayList<String>(){{ add( params.get("from"));}});
+            exchange.setStatus(303, -1);
         }
     }
 }

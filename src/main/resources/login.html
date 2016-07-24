@@ -13,9 +13,20 @@ form {
     border-radius: 1em;
 }
 </style>
+<script>
+    function getParameterByName(name, url) {
+    if (!url) url = window.location.href;
+    name = name.replace(/[\[\]]/g, "\\$&");
+    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+        results = regex.exec(url);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, " "));
+}
+</script>
 <body>
 <h1>Login</h1>
-<form action="/authenticate" method="post">
+<form action="/authorize?%referer%" method="post">
     <div>
         <label for="user">User:</label>
         <input type="text" id="user" name="user_name" />

@@ -6,8 +6,8 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.simple.server.model.IServerSession;
+import org.simple.server.model.IServerUser;
 import org.simple.server.model.ServerRole;
-import org.simple.server.model.ServerUser;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -37,8 +37,8 @@ public class SimpleServerSpec extends TestContext {
     public void shouldRedirectToLogin() throws IOException {
         HttpResponse response = request("page1.html");
 
-        assertEquals(301,response.getStatusLine().getStatusCode());
-        assertEquals("login.html",response.getFirstHeader("Location").getValue());
+        assertEquals(307,response.getStatusLine().getStatusCode());
+        assertEquals("login.html?from=/page1.html",response.getFirstHeader("Location").getValue());
     }
 
     @Test
@@ -83,15 +83,37 @@ public class SimpleServerSpec extends TestContext {
     }
 
     @Test
-    public void shouldAccessPage1() throws IOException {
+    public void shouldRedirectAfterAuthentication() {
         repository.createUser("user1","user1", ServerRole.PAGE1);
-        IServerSession session = repository.createSession(new ServerUser("user1", ServerRole.PAGE1));
+        Map<String, String> headers = new HashMap<>();
+        headers.put("Content-type","application/x-www-form-urlencoded");
+        HttpResponse response = request("authorize?from=/page1.html","POST", "user_name=user1&user_password=user1", headers);
+
+        assertEquals(303,response.getStatusLine().getStatusCode());
+        assertEquals("/page1.html",response.getFirstHeader("Location").getValue());
+    }
+
+    @Test
+    public void shouldAccessPage1() throws IOException {
+        IServerUser user = repository.createUser("user1","user1", ServerRole.PAGE1);
+        IServerSession session = repository.createSession(user);
         Map<String, String> headers = new HashMap<>();
         headers.put("Cookie", "SESSION=" + session.getSession());
         HttpResponse response = request("page1.html", "GET", null, headers);
 
         assertEquals(200,response.getStatusLine().getStatusCode());
         assertTrue(EntityUtils.toString(response.getEntity()).contains("user1"));
+    }
+
+    @Test
+    public void shouldHonorRoles() throws IOException {
+        IServerUser user = repository.createUser("user1","user1", ServerRole.PAGE1);
+        IServerSession session = repository.createSession(user);
+        Map<String, String> headers = new HashMap<>();
+        headers.put("Cookie", "SESSION=" + session.getSession());
+        HttpResponse response = request("page2.html", "GET", null, headers);
+
+        assertEquals(403,response.getStatusLine().getStatusCode());
     }
 
 }

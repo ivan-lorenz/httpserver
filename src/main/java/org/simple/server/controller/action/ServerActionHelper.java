@@ -18,10 +18,10 @@ class ServerActionHelper {
     // TODO: Converting an InputStream into a String is not performance friendly. Implement TokenReplacingReader
     // For large web pages this should be a problem. For a real web server implement a TokenReplacingReader
     // (see: http://tutorials.jenkov.com/java-howto/replace-strings-in-streams-arrays-files.html)
-    static void replaceTokenAndSend(IServerExchange exchange, String resource, String user) throws IOException {
+    static void replaceTokenAndSend(IServerExchange exchange, String resource, String token ,String replace) throws IOException {
         String s = getStringFromInputStream(ServerActionHelper.class.getResourceAsStream(resource));
 
-        String response = s.replace("%user%", user);
+        String response = s.replace(token, replace);
 
         if (null != response) {
             Headers h = (Headers) exchange.getResponseHeaders();
@@ -107,6 +107,9 @@ class ServerActionHelper {
 
         String query = exchange.getRequestURI().getQuery();
 
+        if (null == query)
+            return null;
+
         for (String parameter : query.split("&")) {
             String[] keyValue = parameter.split("=");
 
@@ -114,7 +117,6 @@ class ServerActionHelper {
                 return null;
 
             map.put(keyValue[0], keyValue[1]);
-
         }
 
         return map;
