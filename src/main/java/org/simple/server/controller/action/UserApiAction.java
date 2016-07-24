@@ -13,7 +13,7 @@ import static org.simple.server.controller.action.ServerActionHelper.*;
 /* UserApiAction is the REST API controller. An authenticated admin user can create,
  * modify anddelete users from the user store.
  */
-public class UserApiAction implements IServerAction {
+class UserApiAction implements IServerAction {
 
     // Server user store
     private IServerRepository repository;
@@ -22,7 +22,7 @@ public class UserApiAction implements IServerAction {
     private static final String passwordParam = "password";
     private static final String roleParam = "role";
 
-    public UserApiAction(IServerRepository repository) {
+    UserApiAction(IServerRepository repository) {
         this.repository = repository;
     }
 
@@ -94,8 +94,4 @@ public class UserApiAction implements IServerAction {
         exchange.close();
     }
 
-    @Override
-    public boolean isPublic() {
-        return false;
-    }
 }

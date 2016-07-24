@@ -18,8 +18,4 @@ public class PageAction implements IServerAction {
         sendFile(exchange, uri.getPath(),200);
     }
 
-    @Override
-    public boolean isPublic() {
-        return false;
-    }
 }

@@ -18,7 +18,7 @@ import java.util.Map;
 
 class TestContext extends Context {
 
-    static IServerRepository repository = new ServerRepository("admintest", "admintest");
+    static IServerRepository repository = new ServerRepository("admintest", "admintest", new TestClock());
     static private String realm = "test-realm";
 
     @Override
@@ -81,10 +81,10 @@ class TestContext extends Context {
     }
 
     @Before
-    public void setUp() { repository.createUser("admintest","admintest", new ArrayList<ServerRole>(){{ add(ServerRole.ADMIN);}});}
+    public void setUp() { repository.createUser("admintest","admintest",ServerRole.ADMIN); }
 
     @After
-    public void teardown() {
+    public void afterTest() {
         repository.deleteAll();
     }
 

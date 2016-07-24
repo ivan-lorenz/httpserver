@@ -18,8 +18,4 @@ public class LoginAction implements IServerAction {
         sendFile(exchange, uri.getPath(),200);
     }
 
-    @Override
-    public boolean isPublic() {
-        return true;
-    }
 }

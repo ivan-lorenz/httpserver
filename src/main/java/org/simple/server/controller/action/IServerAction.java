@@ -9,5 +9,4 @@ import java.io.IOException;
  */
 public interface IServerAction {
     void execute(IServerExchange exchange) throws IOException;
-    boolean isPublic();
 }

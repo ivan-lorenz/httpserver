@@ -1,8 +1,7 @@
 package org.simple.server.model.repository;
 
-import org.simple.server.model.IServerUser;
-import org.simple.server.model.ServerRole;
-import org.simple.server.model.ServerUser;
+import org.simple.server.application.IClock;
+import org.simple.server.model.*;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -12,13 +11,19 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class ServerRepository implements IServerRepository {
 
-    public ConcurrentHashMap<String, IRepositoryUser> userStore = new ConcurrentHashMap<String,IRepositoryUser>(8, 0.9f, 1);
+    private ConcurrentHashMap<String, IRepositoryUser> userStore = new ConcurrentHashMap<>(8, 0.9f, 1);
+    private ConcurrentHashMap<String, IServerSession> sessionStore = new ConcurrentHashMap<>(8, 0.9f, 1);
 
-    public ServerRepository(String adminUser, String adminPassword) {
+    // System clock
+    private IClock clock;
+
+    public ServerRepository(String adminUser, String adminPassword, IClock clock) {
         ArrayList<ServerRole> roles = new ArrayList<ServerRole>();
         roles.add(ServerRole.ADMIN);
         IRepositoryUser admin = new RepositoryUser(adminUser, roles,adminPassword);
         userStore.put(adminUser, admin);
+
+        this.clock = clock;
     }
 
     @Override
@@ -33,10 +38,10 @@ public class ServerRepository implements IServerRepository {
     }
 
     @Override
-    public Optional<IServerUser> createUser(String user, String password, List<ServerRole> roles) {
+    public IServerUser createUser(String user, String password, List<ServerRole> roles) {
         IRepositoryUser repUser = new RepositoryUser(user, roles, password);
-        IRepositoryUser success = userStore.put(user, repUser);
-        return null != success ? Optional.of(new ServerUser(user,roles)) : Optional.empty();
+        userStore.put(user, repUser);
+        return new ServerUser(user,roles);
     }
 
     @Override
@@ -57,6 +62,13 @@ public class ServerRepository implements IServerRepository {
 
         userStore.put(user, new RepositoryUser(user, roles, repoUser.getPassword()));
         return Optional.of(new ServerUser(user, roles));
+    }
+
+    @Override
+    public IServerSession createSession(IServerUser user) {
+        IServerSession session = new ServerSession(UUID.randomUUID().toString(), clock.getTimestamp());
+        sessionStore.put(user.getUser(), session);
+        return session;
     }
 
     @Override

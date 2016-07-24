@@ -16,8 +16,4 @@ public class NotFoundAction implements IServerAction {
         sendFile(exchange, "/404.html", 404);
     }
 
-    @Override
-    public boolean isPublic() {
-        return true;
-    }
 }

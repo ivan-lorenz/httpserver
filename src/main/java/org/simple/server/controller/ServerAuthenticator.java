@@ -65,24 +65,18 @@ public class ServerAuthenticator extends Authenticator {
         if (router.isPublic(exchange) || router.isNotFound(exchange))
             return new Success(guest);
 
-        if (isAuthenticated(exchange)) {
-
-            // Manage BasicAuthorization for API requests
-            return basicAuthenticator.authenticate(httpExchange);
-
-        } else {
-
-            // Login redirect
-            httpExchange.getResponseHeaders().set("Location","login.html");
-            return new Retry(301);
-        }
+        return authenticationStrategy(httpExchange);
     }
 
-    private boolean isAuthenticated(IServerExchange exchange) {
-        for (String header: exchange.getRequestHeaders().keySet()) {
-            if (Objects.equals(header,"Authorization") || Objects.equals(header,"Set-Cookie"))
-                return true;
+    private Authenticator.Result authenticationStrategy(HttpExchange httpExchange) {
+
+        for (String header: httpExchange.getRequestHeaders().keySet()) {
+            if (Objects.equals(header,"Authorization"))
+                return basicAuthenticator.authenticate(httpExchange);
         }
-        return false;
+
+        // Login redirect
+        httpExchange.getResponseHeaders().set("Location","login.html");
+        return new Retry(301);
     }
 }

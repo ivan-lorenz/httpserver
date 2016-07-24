@@ -9,7 +9,7 @@ import org.simple.server.model.repository.ServerRepository;
 public class RunContext extends Context {
 
     // Server user store
-    protected IServerRepository repository = new ServerRepository("admin", "admin");
+    protected IServerRepository repository = new ServerRepository("admin", "admin", new SystemClock());
 
     // Server realm
     protected String realm = "simple-server";

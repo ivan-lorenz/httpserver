@@ -13,9 +13,6 @@ public class ServerActionFactory {
     // Router configuration
     private IServerRouter router;
 
-    // User store
-    private IServerRepository repository;
-
     // Actions pool
     private IServerAction loginAction;
     private IServerAction pageAction;
@@ -23,15 +20,14 @@ public class ServerActionFactory {
     private IServerAction userApiAction;
     private IServerAction notFoundAction;
 
-    // Router configuration is injected as a dependency
+    // Router configuration and repository are injected as a dependency
     public ServerActionFactory(IServerRouter router, IServerRepository repository) {
         this.router = router;
-        this.repository = repository;
 
         // Create actions
         this.loginAction = new LoginAction();
         this.pageAction = new PageAction();
-        this.authorizeAction = new AuthorizeAction();
+        this.authorizeAction = new AuthorizeAction(repository);
         this.userApiAction = new UserApiAction(repository);
         this.notFoundAction = new NotFoundAction();
     }

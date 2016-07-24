@@ -1,13 +1,19 @@
 package it;
 
 import org.apache.http.HttpResponse;
+import org.apache.http.util.EntityUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.simple.server.model.ServerRole;
+import org.simple.server.model.ServerUser;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class SimpleServerSpec extends TestContext {
 
@@ -27,8 +33,9 @@ public class SimpleServerSpec extends TestContext {
     }
 
     @Test
-    public void shouldAccessPage1() throws IOException {
+    public void shouldRedirectToLogin() throws IOException {
         HttpResponse response = request("page1.html");
+
         assertEquals(301,response.getStatusLine().getStatusCode());
         assertEquals("login.html",response.getFirstHeader("Location").getValue());
     }
@@ -36,25 +43,43 @@ public class SimpleServerSpec extends TestContext {
     @Test
     public void shouldNotFindPage4() {
         HttpResponse response = request("page4.html");
+
         assertEquals(404,response.getStatusLine().getStatusCode());
     }
 
     @Test
     public void shouldNotFindFakePage1() {
         HttpResponse response = request("fakepage1.html");
+
         assertEquals(404,response.getStatusLine().getStatusCode());
     }
 
     @Test
     public void shouldAccessLogin() {
         HttpResponse response = request("login.html");
+
         assertEquals(200,response.getStatusLine().getStatusCode());
     }
 
     @Test
     public void shouldNotAuthorizeAccess() {
-        HttpResponse response = request("authorize","POST", "user_name=user1&user_password=user1", null);
+        Map<String, String> headers = new HashMap<>();
+        headers.put("Content-type","application/x-www-form-urlencoded");
+        HttpResponse response = request("authorize","POST", "user_name=user1&user_password=user1", headers);
+
         assertEquals(401,response.getStatusLine().getStatusCode());
     }
+
+    @Test
+    public void shouldCreateSession() {
+        repository.createUser("user1","user1", ServerRole.PAGE1);
+        Map<String, String> headers = new HashMap<>();
+        headers.put("Content-type","application/x-www-form-urlencoded");
+        HttpResponse response = request("authorize","POST", "user_name=user1&user_password=user1", headers);
+
+        assertEquals(200,response.getStatusLine().getStatusCode());
+        assertTrue(response.getFirstHeader("Set-Cookie").getValue().contains("SESSION="));
+    }
+
 
 }

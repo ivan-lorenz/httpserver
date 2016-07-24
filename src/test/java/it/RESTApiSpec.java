@@ -48,7 +48,7 @@ public class RESTApiSpec extends TestContext {
 
     @Test
     public void shouldDeleteUser() {
-        repository.createUser("user1","user1", new ArrayList<ServerRole>(){{ add(ServerRole.PAGE1);}});
+        repository.createUser("user1","user1", ServerRole.PAGE1);
         Map<String, String> headers = new HashMap<>();
 
         //Basic Authentication for user "admintest"
@@ -59,7 +59,7 @@ public class RESTApiSpec extends TestContext {
 
     @Test
     public void shouldUpdateUser() {
-        repository.createUser("user1","user1", new ArrayList<ServerRole>(){{ add(ServerRole.PAGE1);}});
+        repository.createUser("user1","user1", ServerRole.PAGE1);
         Map<String, String> headers = new HashMap<>();
 
         //Basic Authentication for user "admintest"
