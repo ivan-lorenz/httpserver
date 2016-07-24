@@ -11,9 +11,9 @@ import java.util.List;
  */
 public class ServerScope {
 
-    private ServerAction action;
-    private boolean publicScope;
-    private List<ServerRole> allowedRoles;
+    private final ServerAction action;
+    private final boolean publicScope;
+    private final List<ServerRole> allowedRoles;
 
     public ServerScope(ServerAction action, boolean publicScope, List<ServerRole> allowedRoles) {
         this.action = action;

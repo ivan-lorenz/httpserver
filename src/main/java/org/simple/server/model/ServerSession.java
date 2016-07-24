@@ -7,11 +7,11 @@ import java.time.Duration;
 public class ServerSession implements IServerSession {
 
     // Session expiration timeout.
-    private static long expirationTime = Duration.ofMinutes(5).toMillis();
+    private static final long expirationTime = Duration.ofMinutes(5).toMillis();
 
-    private String session;
-    private long timestamp;
-    private IServerUser user;
+    private final String session;
+    private final long timestamp;
+    private final IServerUser user;
 
     public ServerSession(IServerUser user, String session, long timestamp) {
         this.session = session;
@@ -23,9 +23,6 @@ public class ServerSession implements IServerSession {
     public String getSession() {
         return session;
     }
-
-    @Override
-    public long getTimestamp() { return timestamp; }
 
     @Override
     public IServerUser getServerUser() { return user; }

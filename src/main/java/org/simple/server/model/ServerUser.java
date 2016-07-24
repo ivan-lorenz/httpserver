@@ -16,16 +16,6 @@ public class ServerUser implements IServerUser {
         this.roles = roles;
     }
 
-    public ServerUser(String user, ServerRole role) {
-        this.user = user;
-        this.roles.add(role);
-    }
-
-    public ServerUser addRole(ServerRole role) {
-        this.roles.add(role);
-        return this;
-    }
-
     @Override
     public String getUser() {
         return this.user;

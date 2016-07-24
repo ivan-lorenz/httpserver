@@ -34,19 +34,16 @@ class ServerActionHelper {
     }
 
     // Helper method to copy our static files to the server output stream.
-    static int sendFile(IServerExchange exchange, String resource, int status) throws IOException {
-        int count = 0;
+    static void sendFile(IServerExchange exchange, String resource, int status) throws IOException {
 
         InputStream is = ServerActionHelper.class.getResourceAsStream(resource);
         if (null != is) {
             Headers h = (Headers) exchange.getResponseHeaders();
             h.set("Content-Type", "text/html");
             exchange.setStatus(status, 0);
-            count = stream(is, exchange.getResponseBody());
+            stream(is, exchange.getResponseBody());
             exchange.close();
         }
-
-        return count;
     }
 
     static boolean isWwwFormUrlencoded(IServerExchange exchange) {
@@ -91,7 +88,7 @@ class ServerActionHelper {
         os.write(message.getBytes("UTF-8"));
     }
 
-    private static Pattern userPattern = Pattern.compile("/api/user/(.+)$");
+    private static final Pattern userPattern = Pattern.compile("/api/user/(.+)$");
 
     static String getUserFromRequest(IServerExchange exchange) {
         Matcher matcher = userPattern.matcher(exchange.getRequestURI().getPath());

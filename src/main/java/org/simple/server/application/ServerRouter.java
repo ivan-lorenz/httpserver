@@ -5,8 +5,6 @@ import org.simple.server.controller.action.ServerScope;
 
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
 /* ServerRouter encapsulates the logic behind mapping a URL to a server action.
@@ -14,7 +12,7 @@ import java.util.regex.Pattern;
  */
 class ServerRouter implements IServerRouter {
 
-    private Map<String, ServerScope> router;
+    private final Map<String, ServerScope> router;
 
     ServerRouter(Map<String, ServerScope> router) {
         this.router = router;

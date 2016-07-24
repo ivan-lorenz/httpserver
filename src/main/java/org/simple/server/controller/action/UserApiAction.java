@@ -18,7 +18,7 @@ import static org.simple.server.controller.action.ServerActionHelper.*;
 class UserApiAction implements IServerAction {
 
     // Server user store
-    private IServerRepository repository;
+    private final IServerRepository repository;
 
     // Names of mandatoryParameters to update a user. Add "password" for user creation.
     private static final String passwordParam = "password";

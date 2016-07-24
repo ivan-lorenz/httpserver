@@ -37,11 +37,11 @@ public class ServerExchange implements IServerExchange {
         return exchange.getResponseHeaders();
     }
 
-    public InputStream getRequestBody() throws IOException {
+    public InputStream getRequestBody() {
         return exchange.getRequestBody();
     }
 
-    public OutputStream getResponseBody() throws IOException{
+    public OutputStream getResponseBody(){
         return exchange.getResponseBody();
     }
 

@@ -22,7 +22,7 @@ public class ServerAuthenticator extends Authenticator {
      */
     private class ServerBasicAuthenticator extends BasicAuthenticator {
 
-        private IServerRepository repository;
+        private final IServerRepository repository;
 
         ServerBasicAuthenticator(String realm, IServerRepository repository) {
             super(realm);
@@ -39,22 +39,22 @@ public class ServerAuthenticator extends Authenticator {
     }
 
     // Basic authentication.
-    private ServerBasicAuthenticator basicAuthenticator;
+    private final ServerBasicAuthenticator basicAuthenticator;
 
     // Server router.
-    private IServerRouter router;
+    private final IServerRouter router;
 
     // Server realm
-    private String realm;
+    private final String realm;
 
     // System clock
-    private IClock clock;
+    private final IClock clock;
 
     // Guest user used to bypass authentication for not found pages and login page.
-    private HttpPrincipal guest;
+    private final HttpPrincipal guest;
 
     // Server repository for users and sessions
-    private IServerRepository repository;
+    private final IServerRepository repository;
 
     public ServerAuthenticator(IServerRouter router, String realm, IServerRepository repository, IClock clock) {
         this.router = router;

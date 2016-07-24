@@ -10,10 +10,10 @@ import org.simple.server.model.repository.ServerRepository;
 public class RunContext extends Context {
 
     // System clock
-    protected IClock systemClock;
+    private final IClock systemClock;
 
     // Server user store
-    protected IServerRepository repository;
+    protected final IServerRepository repository;
 
     public RunContext() {
         this.systemClock = new SystemClock();
@@ -24,7 +24,7 @@ public class RunContext extends Context {
     }
 
     // Server realm
-    protected String realm = "simple-server";
+    private final String realm = "simple-server";
 
     @Override
     public ISupplyContext supplyContext() {

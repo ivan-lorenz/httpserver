@@ -1,6 +1,5 @@
 package org.simple.server.controller.action;
 
-import com.sun.net.httpserver.Authenticator;
 import org.simple.server.controller.IServerExchange;
 import org.simple.server.model.IServerSession;
 import org.simple.server.model.repository.IServerRepository;
@@ -17,7 +16,7 @@ import static org.simple.server.controller.action.ServerActionHelper.*;
 class AuthorizeAction implements IServerAction {
 
     // Server user store
-    private IServerRepository repository;
+    private final IServerRepository repository;
 
     // Names of mandatory parameters to authenticate a user.
     private static final String userParam = "user_name";

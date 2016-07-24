@@ -11,15 +11,15 @@ import org.simple.server.model.repository.IServerRepository;
 public class ServerActionFactory {
 
     // Router configuration
-    private IServerRouter router;
+    private final IServerRouter router;
 
     // Actions pool
-    private IServerAction loginAction;
-    private IServerAction logoutAction;
-    private IServerAction pageAction;
-    private IServerAction authorizeAction;
-    private IServerAction userApiAction;
-    private IServerAction notFoundAction;
+    private final IServerAction loginAction;
+    private final IServerAction logoutAction;
+    private final IServerAction pageAction;
+    private final IServerAction authorizeAction;
+    private final IServerAction userApiAction;
+    private final IServerAction notFoundAction;
 
     // Router configuration and repository are injected as a dependency
     public ServerActionFactory(IServerRouter router, IServerRepository repository) {

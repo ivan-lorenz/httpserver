@@ -10,7 +10,6 @@ import org.simple.server.model.IServerUser;
 import org.simple.server.model.ServerRole;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 

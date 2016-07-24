@@ -11,14 +11,14 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class ServerRepository implements IServerRepository {
 
-    private ConcurrentHashMap<String, IRepositoryUser> userStore = new ConcurrentHashMap<>(8, 0.9f, 1);
-    private ConcurrentHashMap<String, IServerSession> sessionStore = new ConcurrentHashMap<>(8, 0.9f, 1);
+    private final ConcurrentHashMap<String, IRepositoryUser> userStore = new ConcurrentHashMap<>(8, 0.9f, 1);
+    private final ConcurrentHashMap<String, IServerSession> sessionStore = new ConcurrentHashMap<>(8, 0.9f, 1);
 
     // System clock
-    private IClock clock;
+    private final IClock clock;
 
     public ServerRepository(String adminUser, String adminPassword, IClock clock) {
-        ArrayList<ServerRole> roles = new ArrayList<ServerRole>();
+        ArrayList<ServerRole> roles = new ArrayList<>();
         roles.add(ServerRole.ADMIN);
         IRepositoryUser admin = new RepositoryUser(adminUser, roles,adminPassword);
         userStore.put(adminUser, admin);
@@ -32,7 +32,7 @@ public class ServerRepository implements IServerRepository {
         for (Map.Entry<String, IRepositoryUser> u: userStore.entrySet()) {
             if (Objects.equals(u.getKey(), user) && Objects.equals(u.getValue().getPassword(), password))
                 return Optional.of(new ServerUser(user, u.getValue().getRoles()));
-        };
+        }
 
         return Optional.empty();
     }

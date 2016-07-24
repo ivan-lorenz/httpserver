@@ -14,7 +14,7 @@ public enum ServerRole {
     PAGE3("PAGE_3"),
     ADMIN("ADMIN");
 
-    public static List<ServerRole> all = new ArrayList<ServerRole>(){{
+    public static final List<ServerRole> all = new ArrayList<ServerRole>(){{
         add(PAGE1);
         add(PAGE2);
         add(PAGE3);

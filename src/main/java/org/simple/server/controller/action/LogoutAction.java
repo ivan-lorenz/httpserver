@@ -13,7 +13,7 @@ import static org.simple.server.controller.action.ServerActionHelper.sendFile;
 public class LogoutAction implements IServerAction {
 
     // User store
-    private IServerRepository repository;
+    private final IServerRepository repository;
 
     LogoutAction(IServerRepository repository) {
         this.repository = repository;
@@ -39,6 +39,6 @@ public class LogoutAction implements IServerAction {
             replaceTokenAndSend(exchange, "/error.html", "%status%", "404", 404);
         }
 
-        exchange.close();;
+        exchange.close();
     }
 }

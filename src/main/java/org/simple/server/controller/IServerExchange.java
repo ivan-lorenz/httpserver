@@ -11,13 +11,13 @@ import java.util.Map;
  *
  */
 public interface IServerExchange {
-    public String getRequestMethod();
-    public URI getRequestURI();
-    public Map<String, List<String>> getRequestHeaders();
-    public Map<String, List<String>> getResponseHeaders();
-    public InputStream getRequestBody() throws IOException;
-    public OutputStream getResponseBody() throws IOException;
-    public void setStatus(int rCode, long responseLength)throws IOException;
-    public void close();
-    public String getUser();
+    String getRequestMethod();
+    URI getRequestURI();
+    Map<String, List<String>> getRequestHeaders();
+    Map<String, List<String>> getResponseHeaders();
+    InputStream getRequestBody();
+    OutputStream getResponseBody();
+    void setStatus(int rCode, long responseLength)throws IOException;
+    void close();
+    String getUser();
 }

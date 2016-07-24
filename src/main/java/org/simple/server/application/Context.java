@@ -1,14 +1,14 @@
 package org.simple.server.application;
 
 import com.sun.net.httpserver.HttpContext;
-import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import org.simple.server.controller.ServerAuthenticator;
 import org.simple.server.controller.ServerHandler;
-import org.simple.server.controller.action.*;
+import org.simple.server.controller.action.ServerAction;
+import org.simple.server.controller.action.ServerActionFactory;
+import org.simple.server.controller.action.ServerScope;
 import org.simple.server.model.ServerRole;
 import org.simple.server.model.repository.IServerRepository;
-import org.simple.server.model.repository.ServerRepository;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -28,7 +28,7 @@ public abstract class Context {
 
     // Router configuration for our server
     // We map a URI path and method with a concrete action controller
-    private Map<String, ServerScope> routerConfiguration =
+    private final Map<String, ServerScope> routerConfiguration =
         new HashMap<String, ServerScope>() {{
             put("GET/login.html", new ServerScope(ServerAction.LOGIN, true, ServerRole.all));
             put("GET/logout.html", new ServerScope(ServerAction.LOGOUT, false, ServerRole.all));
