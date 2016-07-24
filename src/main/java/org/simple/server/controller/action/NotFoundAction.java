@@ -14,7 +14,7 @@ public class NotFoundAction implements IServerAction {
 
     @Override
     public void execute(IServerExchange exchange) throws IOException {
-        replaceTokenAndSend(exchange, "/error.html", "%error", "404", 404);
+        replaceTokenAndSend(exchange, "/error.html", "%status%", "404", 404);
     }
 
 }

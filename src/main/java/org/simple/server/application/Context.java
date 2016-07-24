@@ -52,8 +52,8 @@ public abstract class Context {
 
 
     // Start listening on a port
-    public void start() throws IOException {
-        server = HttpServer.create(new InetSocketAddress(8001), 0);
+    public void start(int port) throws IOException {
+        server = HttpServer.create(new InetSocketAddress(port), 0);
         IServerRouter router = new ServerRouter(routerConfiguration);
         HttpContext context = server.createContext("/", new ServerHandler(new ServerActionFactory(router,supplyContext().getRepository())));
         context.setAuthenticator(new ServerAuthenticator(router,supplyContext().getRealm(), supplyContext().getRepository(), supplyContext().getClock()));

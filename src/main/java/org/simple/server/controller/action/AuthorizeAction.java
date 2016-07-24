@@ -41,15 +41,15 @@ class AuthorizeAction implements IServerAction {
                 if (null != user && null != password) {
 
                     if (!createSession(user, password, exchange))
-                        replaceTokenAndSend(exchange, "/error.html", "%error","401 - Unauthorized", 401);
+                        replaceTokenAndSend(exchange, "/error.html", "%status%","401 - Unauthorized", 401);
                 }
 
             } else {
-                replaceTokenAndSend(exchange, "/error.html", "%error","400 - Wrong parameters", 400);
+                replaceTokenAndSend(exchange, "/error.html", "%status%","400 - Wrong parameters", 400);
             }
 
         } else {
-            replaceTokenAndSend(exchange, "/error.html", "%error","400 - Content type must be application/x-www-form-urlencode", 400);
+            replaceTokenAndSend(exchange, "/error.html", "%status%","400 - Content type must be application/x-www-form-urlencode", 400);
         }
 
         exchange.close();

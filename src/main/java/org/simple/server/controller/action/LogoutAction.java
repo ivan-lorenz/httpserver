@@ -31,12 +31,12 @@ public class LogoutAction implements IServerAction {
                 if (repository.closeSession(session).isPresent())
                     sendFile(exchange, "/logout.html", 200);
                 else
-                    replaceTokenAndSend(exchange, "/error.html", "%error", "404", 404);
+                    replaceTokenAndSend(exchange, "/error.html", "%status%", "404", 404);
             } else {
-                replaceTokenAndSend(exchange, "/error.html", "%error", "404", 404);
+                replaceTokenAndSend(exchange, "/error.html", "%status%", "404", 404);
             }
         } else {
-            replaceTokenAndSend(exchange, "/error.html", "%error", "404", 404);
+            replaceTokenAndSend(exchange, "/error.html", "%status%", "404", 404);
         }
 
         exchange.close();;

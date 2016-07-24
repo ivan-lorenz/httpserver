@@ -17,7 +17,7 @@ import java.util.Map;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-public class RESTApiSpec extends TestContext {
+public class RESTApiTest extends TestContext {
 
     private static TestContext context = new TestContext();
 
@@ -25,13 +25,13 @@ public class RESTApiSpec extends TestContext {
     private String adminBasicAuthorizationEncoded = "YWRtaW50ZXN0OmFkbWludGVzdA==";
 
     @BeforeClass
-    public static void setup() throws IOException { context.start(); }
+    public static void setup() throws IOException { context.start(8001); }
 
     @AfterClass
     public static void tearDown() { context.stop(0); }
 
     @Test
-    public void shouldFailAccessingAPI() {
+    public void shouldFailWithWronParameters() {
         Map<String, String> headers = new HashMap<>();
 
         //Basic Authentication for user "admintest"

@@ -16,12 +16,12 @@ import java.util.Map;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-public class SimpleServerSpec extends TestContext {
+public class SimpleServerTest extends TestContext {
 
     private static TestContext context = new TestContext();
 
     @BeforeClass
-    public static void setup() throws IOException { context.start(); }
+    public static void setup() throws IOException { context.start(8001); }
 
     @AfterClass
     public static void tearDown() {
