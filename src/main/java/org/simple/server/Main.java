@@ -18,7 +18,7 @@ public class Main {
                 port = Integer.parseInt(args[0]);
             }
             new RunContext().start(port);
-            System.out.println("Server started. Listening on port 8001...");
+            System.out.println("Server started. Listening on port " + String.valueOf(port) + "...");
         } catch (IOException e) {
             System.out.println("Can't start the server.");
         } catch (NumberFormatException e) {

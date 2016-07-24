@@ -53,15 +53,20 @@ class UserApiAction implements IServerAction {
 
         Map<String, String> params = getQueryParams(exchange);
 
-        List<ServerRole> roles = getRoles(params.get(roleParam));
-        String user = getUserFromRequest(exchange);
-        String password = params.get(passwordParam);
+        if (null !=  params) {
 
-        if (roles.isEmpty() || null == user || user.isEmpty() || null == password || password.isEmpty())
-            sendResponse(400,"Wrong parameters",exchange);
-        else {
-            repository.createUser(user,password,roles);
-            exchange.setStatus(200,-1);
+            List<ServerRole> roles = getRoles(params.get(roleParam));
+            String user = getUserFromRequest(exchange);
+            String password = params.get(passwordParam);
+
+            if (roles.isEmpty() || null == user || user.isEmpty() || null == password || password.isEmpty())
+                sendResponse(400, "Wrong parameters", exchange);
+            else {
+                repository.createUser(user, password, roles);
+                exchange.setStatus(200, -1);
+            }
+        } else {
+            sendResponse(400, "Wrong parameters", exchange);
         }
         exchange.close();
     }

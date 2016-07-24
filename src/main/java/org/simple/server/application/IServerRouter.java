@@ -10,6 +10,7 @@ import java.util.Optional;
  */
 public interface IServerRouter {
     Optional<ServerScope> get(IServerExchange e);
+    boolean isApi(IServerExchange e);
 
     // Default methods
     default boolean isNotFound(IServerExchange e) {

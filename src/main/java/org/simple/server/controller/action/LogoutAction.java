@@ -19,7 +19,7 @@ public class LogoutAction implements IServerAction {
         this.repository = repository;
     }
 
-    // TODO: refactor this arrow code.
+    // TODO: refactor arrow code.
     @Override
     public void execute(IServerExchange exchange) throws IOException {
         List<String> cookieList = exchange.getRequestHeaders().get("Cookie");

@@ -5,16 +5,18 @@ import org.simple.server.controller.action.ServerScope;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
 /* ServerRouter encapsulates the logic behind mapping a URL to a server action.
  *
  */
-public class ServerRouter implements IServerRouter {
+class ServerRouter implements IServerRouter {
 
     private Map<String, ServerScope> router;
 
-    public ServerRouter(Map<String,ServerScope> router) {
+    ServerRouter(Map<String, ServerScope> router) {
         this.router = router;
     }
 
@@ -27,6 +29,11 @@ public class ServerRouter implements IServerRouter {
         }
 
         return Optional.empty();
+    }
+
+    @Override
+    public boolean isApi(IServerExchange e) {
+        return setRouterKey(e).contains("/api/user");
     }
 
     // Router logic to build the key to map for an action

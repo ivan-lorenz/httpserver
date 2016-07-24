@@ -31,12 +31,18 @@ public class RESTApiTest extends TestContext {
     public static void tearDown() { context.stop(0); }
 
     @Test
-    public void shouldFailWithWronParameters() {
+    public void shouldFailAccess() {
+        HttpResponse response = request("api/user/user4", "POST", null, null);
+        assertEquals(401,response.getStatusLine().getStatusCode());
+    }
+
+    @Test
+    public void shouldFailWithWrongParameters() {
         Map<String, String> headers = new HashMap<>();
 
         //Basic Authentication for user "admintest"
         headers.put("Authorization","Basic " + adminBasicAuthorizationEncoded);
-        HttpResponse response = request("api/user/user1?role=PAGE_1", "POST", null, headers);
+        HttpResponse response = request("api/user/user1", "POST", null, headers);
         assertEquals(400,response.getStatusLine().getStatusCode());
     }
 

@@ -87,10 +87,14 @@ public class ServerAuthenticator extends Authenticator {
                 return cookieAuthenticate(httpExchange, httpExchange.getRequestHeaders().getFirst("Cookie"));
         }
 
-        // Login redirect
-        Headers headers = httpExchange.getResponseHeaders();
-        headers.set("Location","login.html?from="+httpExchange.getRequestURI().getPath());
-        return new Retry(307);
+        if (router.isApi(new ServerExchange(httpExchange)))
+            return new Failure(401);
+        else {
+            // Login redirect
+            Headers headers = httpExchange.getResponseHeaders();
+            headers.set("Location", "login.html?from=" + httpExchange.getRequestURI().getPath());
+            return new Retry(307);
+        }
     }
 
     private Authenticator.Result cookieAuthenticate(HttpExchange exchange, String cookie) {
