@@ -6,6 +6,7 @@ package org.simple.server.controller.action;
 public enum ServerAction {
 
     LOGIN,
+    LOGOUT,
     PAGE,
     AUTHORIZE,
     USERAPI

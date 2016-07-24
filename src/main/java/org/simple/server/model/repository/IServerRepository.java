@@ -15,9 +15,11 @@ public interface IServerRepository {
     Optional<IServerUser> getCredentials(String user, String password);
     IServerUser createUser(String user, String password, List<ServerRole> roles);
     Optional<IServerUser> deleteUser(String user);
+    Optional<IServerUser> getUser(String user);
     Optional<IServerUser> updateUser(String user, List<ServerRole> roles);
     IServerSession createSession(IServerUser user);
     Optional<IServerSession> getSession(String session);
+    Optional<IServerSession> closeSession(String session);
     void deleteAll();
 
     // Default methods

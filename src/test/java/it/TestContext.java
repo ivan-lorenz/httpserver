@@ -18,7 +18,7 @@ import java.util.Map;
 
 class TestContext extends Context {
 
-    static IClock testClock = new TestClock();
+    static TestClock testClock = new TestClock();
     static IServerRepository repository = new ServerRepository("admintest", "admintest", testClock);
     static private String realm = "test-realm";
 

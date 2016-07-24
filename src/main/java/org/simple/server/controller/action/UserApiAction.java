@@ -1,12 +1,14 @@
 package org.simple.server.controller.action;
 
 import org.simple.server.controller.IServerExchange;
+import org.simple.server.model.IServerUser;
 import org.simple.server.model.ServerRole;
 import org.simple.server.model.repository.IServerRepository;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.simple.server.controller.action.ServerActionHelper.*;
 
@@ -38,6 +40,9 @@ class UserApiAction implements IServerAction {
             case "PUT":
                 updateUser(exchange);
                 break;
+            case "GET":
+                getUser(exchange);
+                break;
             default:
                 exchange.setStatus(405,-1);
                 exchange.close();
@@ -53,7 +58,7 @@ class UserApiAction implements IServerAction {
         String password = params.get(passwordParam);
 
         if (roles.isEmpty() || null == user || user.isEmpty() || null == password || password.isEmpty())
-            sendErrorResponse(400,"Wrong parameters",exchange);
+            sendResponse(400,"Wrong parameters",exchange);
         else {
             repository.createUser(user,password,roles);
             exchange.setStatus(200,-1);
@@ -65,9 +70,9 @@ class UserApiAction implements IServerAction {
         String user = getUserFromRequest(exchange);
 
         if (null == user)
-            sendErrorResponse(400,"Unable to find the user",exchange);
+            sendResponse(400,"Unable to find the user",exchange);
         else if (!repository.deleteUser(user).isPresent())
-            sendErrorResponse(404,"User not found",exchange);
+            sendResponse(404,"User not found",exchange);
         else
             exchange.setStatus(200, -1);
 
@@ -80,15 +85,33 @@ class UserApiAction implements IServerAction {
         Map<String, String> params = getQueryParams(exchange);
 
         if (null == user || null == params)
-            sendErrorResponse(400,"Wrong parameters",exchange);
+            sendResponse(400,"Wrong parameters",exchange);
         else {
             List<ServerRole> roles = getRoles(params.get(roleParam));
             if (null == roles || roles.isEmpty())
-                sendErrorResponse(400,"Wrong parameters",exchange);
+                sendResponse(400,"Wrong parameters",exchange);
             else if (!repository.updateUser(user,roles).isPresent()) {
-                sendErrorResponse(404,"User not found",exchange);
+                sendResponse(404,"User not found",exchange);
             } else
                 exchange.setStatus(200, -1);
+        }
+
+        exchange.close();
+    }
+
+    private void getUser(IServerExchange exchange) throws IOException {
+        String user = getUserFromRequest(exchange);
+
+        if (null == user)
+            sendResponse(400,"Unable to find the user",exchange);
+        else {
+            Optional<IServerUser> sucess = repository.getUser(user);
+            if (!sucess.isPresent())
+                sendResponse(404, "User not found", exchange);
+            else {
+                sendResponse(200, sucess.get().toString(), exchange);
+
+            }
         }
 
         exchange.close();

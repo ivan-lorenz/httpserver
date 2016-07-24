@@ -54,6 +54,15 @@ public class ServerRepository implements IServerRepository {
     }
 
     @Override
+    public Optional<IServerUser> getUser(String user) {
+        IRepositoryUser repoUser = userStore.get(user);
+        if (null == repoUser)
+            return Optional.empty();
+
+        return Optional.of(new ServerUser(user,repoUser.getRoles()));
+    }
+
+    @Override
     public Optional<IServerUser> updateUser(String user, List<ServerRole> roles) {
         IRepositoryUser repoUser = userStore.get(user);
 
@@ -74,6 +83,12 @@ public class ServerRepository implements IServerRepository {
     @Override
     public Optional<IServerSession> getSession(String session) {
         IServerSession success = sessionStore.get(session);
+        return null != success ? Optional.of(success) : Optional.empty();
+    }
+
+    @Override
+    public Optional<IServerSession> closeSession(String session) {
+        IServerSession success = sessionStore.remove(session);
         return null != success ? Optional.of(success) : Optional.empty();
     }
 

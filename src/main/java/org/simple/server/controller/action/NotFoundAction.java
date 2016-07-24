@@ -4,6 +4,7 @@ import org.simple.server.controller.IServerExchange;
 
 import java.io.IOException;
 
+import static org.simple.server.controller.action.ServerActionHelper.replaceTokenAndSend;
 import static org.simple.server.controller.action.ServerActionHelper.sendFile;
 
 /* NotFoundAction is a IServerAction implementation for URI requests not mapped
@@ -13,7 +14,7 @@ public class NotFoundAction implements IServerAction {
 
     @Override
     public void execute(IServerExchange exchange) throws IOException {
-        sendFile(exchange, "/404.html", 404);
+        replaceTokenAndSend(exchange, "/error.html", "%error", "404", 404);
     }
 
 }

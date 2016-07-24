@@ -31,12 +31,13 @@ public abstract class Context {
     private Map<String, ServerScope> routerConfiguration =
         new HashMap<String, ServerScope>() {{
             put("GET/login.html", new ServerScope(ServerAction.LOGIN, true, ServerRole.all));
+            put("GET/logout.html", new ServerScope(ServerAction.LOGOUT, false, ServerRole.all));
             put("GET/page1.html$", new ServerScope(ServerAction.PAGE, false, ServerRole.PAGE1));
             put("GET/page2.html$", new ServerScope(ServerAction.PAGE, false, ServerRole.PAGE2));
             put("GET/page3.html$", new ServerScope(ServerAction.PAGE, false, ServerRole.PAGE3));
             put("POST/authorize$", new ServerScope(ServerAction.AUTHORIZE, true, ServerRole.all));
             put("(POST|DELETE|PUT)/api/user/(.+)", new ServerScope(ServerAction.USERAPI, false, ServerRole.ADMIN));
-            put("GET/api/user/(.+)", new ServerScope(ServerAction.USERAPI, false, ServerRole.ADMIN));
+            put("GET/api/user/(.+)", new ServerScope(ServerAction.USERAPI, false, ServerRole.all));
         }};
 
     // Interface to supply context that subclasses must implement.

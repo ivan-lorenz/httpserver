@@ -106,6 +106,20 @@ public class SimpleServerSpec extends TestContext {
     }
 
     @Test
+    public void shouldFailOnSessionExpiration() throws IOException {
+        IServerUser user = repository.createUser("user1","user1", ServerRole.PAGE1);
+        IServerSession session = repository.createSession(user);
+        Map<String, String> headers = new HashMap<>();
+        headers.put("Cookie", "SESSION=" + session.getSession());
+
+        // 300000 ms are 5 minutes which is the expiration time for a session
+        testClock.setTime(testClock.getTimestamp() + 300000);
+        HttpResponse response = request("page1.html", "GET", null, headers);
+
+        assertEquals(403,response.getStatusLine().getStatusCode());
+    }
+
+    @Test
     public void shouldHonorRoles() throws IOException {
         IServerUser user = repository.createUser("user1","user1", ServerRole.PAGE1);
         IServerSession session = repository.createSession(user);
@@ -114,6 +128,18 @@ public class SimpleServerSpec extends TestContext {
         HttpResponse response = request("page2.html", "GET", null, headers);
 
         assertEquals(403,response.getStatusLine().getStatusCode());
+    }
+
+    @Test
+    public void shouldCloseSession() throws IOException {
+        IServerUser user = repository.createUser("user1","user1", ServerRole.PAGE1);
+        IServerSession session = repository.createSession(user);
+        Map<String, String> headers = new HashMap<>();
+        headers.put("Cookie", "SESSION=" + session.getSession());
+        HttpResponse response = request("logout.html", "GET", null, headers);
+
+        assertEquals(200, response.getStatusLine().getStatusCode());
+        assertTrue(EntityUtils.toString(response.getEntity()).contains("log out"));
     }
 
 }

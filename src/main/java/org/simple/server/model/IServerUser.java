@@ -18,4 +18,5 @@ public interface IServerUser {
         }
         return false;
     }
+
 }

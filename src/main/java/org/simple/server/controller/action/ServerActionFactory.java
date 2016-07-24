@@ -15,6 +15,7 @@ public class ServerActionFactory {
 
     // Actions pool
     private IServerAction loginAction;
+    private IServerAction logoutAction;
     private IServerAction pageAction;
     private IServerAction authorizeAction;
     private IServerAction userApiAction;
@@ -26,6 +27,7 @@ public class ServerActionFactory {
 
         // Create actions
         this.loginAction = new LoginAction();
+        this.logoutAction = new LogoutAction(repository);
         this.pageAction = new PageAction();
         this.authorizeAction = new AuthorizeAction(repository);
         this.userApiAction = new UserApiAction(repository);
@@ -41,6 +43,9 @@ public class ServerActionFactory {
                     switch (serverScope.action()) {
                         case LOGIN:
                             action = loginAction;
+                            break;
+                        case LOGOUT:
+                            action = logoutAction;
                             break;
                         case PAGE:
                             action = pageAction;

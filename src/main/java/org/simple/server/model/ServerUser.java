@@ -36,4 +36,13 @@ public class ServerUser implements IServerUser {
         return this.roles;
     }
 
+    @Override
+    public String toString() {
+        StringBuilder listString = new StringBuilder();
+
+        for (ServerRole s : getRoles())
+            listString.append(s.getValue()+",");
+
+        return "User: " + getUser() + "; Roles: " + listString;
+    }
 }

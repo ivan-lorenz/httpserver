@@ -15,10 +15,10 @@ import java.util.regex.Pattern;
 class ServerActionHelper {
 
     // Helper method to replace computed server side tokens in the views
-    // TODO: Converting an InputStream into a String is not performance friendly. Implement TokenReplacingReader
+    // TODO: Converting an InputStream into a String can cause performance issues. Implement TokenReplacingReader.
     // For large web pages this should be a problem. For a real web server implement a TokenReplacingReader
     // (see: http://tutorials.jenkov.com/java-howto/replace-strings-in-streams-arrays-files.html)
-    static void replaceTokenAndSend(IServerExchange exchange, String resource, String token ,String replace) throws IOException {
+    static void replaceTokenAndSend(IServerExchange exchange, String resource, String token ,String replace, int status) throws IOException {
         String s = getStringFromInputStream(ServerActionHelper.class.getResourceAsStream(resource));
 
         String response = s.replace(token, replace);
@@ -26,7 +26,7 @@ class ServerActionHelper {
         if (null != response) {
             Headers h = (Headers) exchange.getResponseHeaders();
             h.set("Content-Type", "text/html");
-            exchange.setStatus(200, 0);
+            exchange.setStatus(status, 0);
             OutputStream os = exchange.getResponseBody();
             os.write(response.getBytes());
             exchange.close();
@@ -85,7 +85,7 @@ class ServerActionHelper {
     }
 
 
-    static void sendErrorResponse(int status, String message, IServerExchange exchange) throws IOException {
+    static void sendResponse(int status, String message, IServerExchange exchange) throws IOException {
         exchange.setStatus(status, message.length());
         OutputStream os = exchange.getResponseBody();
         os.write(message.getBytes("UTF-8"));

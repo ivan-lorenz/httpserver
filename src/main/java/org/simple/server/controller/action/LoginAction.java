@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.net.URI;
 
 import static org.simple.server.controller.action.ServerActionHelper.replaceTokenAndSend;
-import static org.simple.server.controller.action.ServerActionHelper.sendFile;
 
 /*
  *
@@ -18,9 +17,9 @@ public class LoginAction implements IServerAction {
         URI uri = exchange.getRequestURI();
         String query = exchange.getRequestURI().getQuery();
         if (null == query || query.isEmpty())
-            sendFile(exchange, uri.getPath(),200);
+            replaceTokenAndSend(exchange, uri.getPath(),"%referer%", "", 200);
         else
-            replaceTokenAndSend(exchange, uri.getPath(),"%referer%", query);
+            replaceTokenAndSend(exchange, uri.getPath(),"%referer%", "?"+query, 200);
     }
 
 }
