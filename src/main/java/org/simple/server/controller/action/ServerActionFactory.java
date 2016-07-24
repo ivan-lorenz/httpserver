@@ -16,13 +16,27 @@ public class ServerActionFactory {
     // User store
     private IServerRepository repository;
 
+    // Actions pool
+    private IServerAction loginAction;
+    private IServerAction pageAction;
+    private IServerAction authorizeAction;
+    private IServerAction userApiAction;
+    private IServerAction notFoundAction;
+
     // Router configuration is injected as a dependency
     public ServerActionFactory(IServerRouter router, IServerRepository repository) {
         this.router = router;
         this.repository = repository;
+
+        // Create actions
+        this.loginAction = new LoginAction();
+        this.pageAction = new PageAction();
+        this.authorizeAction = new AuthorizeAction();
+        this.userApiAction = new UserApiAction(repository);
+        this.notFoundAction = new NotFoundAction();
     }
 
-    // Implementation of Factory Method
+    // Implementation of Factory Method.
     public IServerAction getAction(IServerExchange exchange) {
         return router
                 .get(exchange)
@@ -30,19 +44,19 @@ public class ServerActionFactory {
                     IServerAction action;
                     switch (serverScope.action()) {
                         case LOGIN:
-                            action = new LoginAction();
+                            action = loginAction;
                             break;
                         case PAGE:
-                            action = new PageAction();
+                            action = pageAction;
                             break;
                         case AUTHORIZE:
-                            action = new AuthorizeAction();
+                            action = authorizeAction;
                             break;
                         case USERAPI:
-                            action = new UserApiAction(repository);
+                            action = userApiAction;
                             break;
                         default:
-                            action = new NotFoundAction();
+                            action = notFoundAction;
                             break;
                     }
                     return action;

@@ -12,7 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class ServerRepository implements IServerRepository {
 
-    private ConcurrentHashMap<String, IRepositoryUser> userStore = new ConcurrentHashMap<String,IRepositoryUser>(8, 0.9f, 1);
+    public ConcurrentHashMap<String, IRepositoryUser> userStore = new ConcurrentHashMap<String,IRepositoryUser>(8, 0.9f, 1);
 
     public ServerRepository(String adminUser, String adminPassword) {
         ArrayList<ServerRole> roles = new ArrayList<ServerRole>();
@@ -33,10 +33,10 @@ public class ServerRepository implements IServerRepository {
     }
 
     @Override
-    public IServerUser createUser(String user, String password, List<ServerRole> roles) {
+    public Optional<IServerUser> createUser(String user, String password, List<ServerRole> roles) {
         IRepositoryUser repUser = new RepositoryUser(user, roles, password);
-        userStore.put(user, repUser);
-        return new ServerUser(user,roles);
+        IRepositoryUser success = userStore.put(user, repUser);
+        return null != success ? Optional.of(new ServerUser(user,roles)) : Optional.empty();
     }
 
     @Override

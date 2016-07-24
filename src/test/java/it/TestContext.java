@@ -1,21 +1,25 @@
 package it;
 
-import com.sun.net.httpserver.HttpHandler;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.*;
+import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.junit.After;
+import org.junit.Before;
 import org.simple.server.application.Context;
-import org.simple.server.application.IServerRouter;
-import org.simple.server.application.RunContext;
-import org.simple.server.application.ServerRouter;
-import org.simple.server.controller.ServerHandler;
-import org.simple.server.controller.action.ServerActionFactory;
+import org.simple.server.model.ServerRole;
 import org.simple.server.model.repository.IServerRepository;
+import org.simple.server.model.repository.ServerRepository;
 
-class TestContext extends RunContext {
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Map;
 
-    private IServerRepository repository;
+class TestContext extends Context {
 
-    TestContext(IServerRepository repository) {
-        this.repository = repository;
-    }
+    static IServerRepository repository = new ServerRepository("admintest", "admintest");
+    static private String realm = "test-realm";
 
     @Override
     public ISupplyContext supplyContext() {
@@ -28,8 +32,60 @@ class TestContext extends RunContext {
 
             @Override
             public String getRealm() {
-                return "test-realm";
+                return realm;
             }
         };
     }
+
+    static HttpResponse request(String path) {
+        return request(path, "GET", null, null);
+    }
+
+    static HttpResponse request(String path, String method, String body, Map<String, String> headers)  {
+        try {
+            HttpClient client =  HttpClientBuilder.create().disableRedirectHandling().build();
+            String uri = "http://localhost:8001/" + path;
+            HttpUriRequest request;
+            switch (method) {
+                case "GET":
+                    request = new HttpGet(uri);
+                    break;
+                case "POST":
+                    request = new HttpPost(uri);
+                    if (null != body)
+                        ((HttpPost) request).setEntity(new ByteArrayEntity(body.getBytes("UTF-8")));
+                    if (null != headers && !headers.isEmpty())
+                        for (Map.Entry<String, String> h : headers.entrySet())
+                            request.addHeader(h.getKey(), h.getValue());
+                    break;
+                case "DELETE":
+                    request = new HttpDelete(uri);
+                    if (null != headers && !headers.isEmpty())
+                        for (Map.Entry<String, String> h : headers.entrySet())
+                            request.addHeader(h.getKey(), h.getValue());
+                    break;
+                case "PUT":
+                    request = new HttpPut(uri);
+                    if (null != headers && !headers.isEmpty())
+                        for (Map.Entry<String, String> h : headers.entrySet())
+                            request.addHeader(h.getKey(), h.getValue());
+                    break;
+                default:
+                    throw new RuntimeException("Http verb not known.");
+            }
+            return client.execute(request);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    @Before
+    public void setUp() { repository.createUser("admintest","admintest", new ArrayList<ServerRole>(){{ add(ServerRole.ADMIN);}});}
+
+    @After
+    public void teardown() {
+        repository.deleteAll();
+    }
+
 }
