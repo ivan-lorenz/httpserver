@@ -14,6 +14,25 @@ import java.util.regex.Pattern;
  */
 class ServerActionHelper {
 
+    // Helper method to replace computed server side tokens in the views
+    // TODO: Converting an InputStream into a String is not performance friendly. Implement TokenReplacingReader
+    // For large web pages this should be a problem. For a real web server implement a TokenReplacingReader
+    // (see: http://tutorials.jenkov.com/java-howto/replace-strings-in-streams-arrays-files.html)
+    static void replaceTokenAndSend(IServerExchange exchange, String resource, String user) throws IOException {
+        String s = getStringFromInputStream(ServerActionHelper.class.getResourceAsStream(resource));
+
+        String response = s.replace("%user%", user);
+
+        if (null != response) {
+            Headers h = (Headers) exchange.getResponseHeaders();
+            h.set("Content-Type", "text/html");
+            exchange.setStatus(200, 0);
+            OutputStream os = exchange.getResponseBody();
+            os.write(response.getBytes());
+            exchange.close();
+        }
+    }
+
     // Helper method to copy our static files to the server output stream.
     static int sendFile(IServerExchange exchange, String resource, int status) throws IOException {
         int count = 0;

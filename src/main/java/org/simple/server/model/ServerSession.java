@@ -1,22 +1,39 @@
 package org.simple.server.model;
 
-import java.util.Date;
+import org.simple.server.application.IClock;
+
+import java.time.Duration;
 
 public class ServerSession implements IServerSession {
 
+    // Session expiration timeout.
+    private static long expirationTime = Duration.ofMinutes(5).toMillis();
+
     private String session;
     private long timestamp;
+    private IServerUser user;
 
-    public ServerSession(String session, long timestamp) {
+    public ServerSession(IServerUser user, String session, long timestamp) {
         this.session = session;
         this.timestamp = timestamp;
+        this.user = user;
     }
 
+    @Override
     public String getSession() {
         return session;
     }
 
-    public long getTimestamp() {
-        return timestamp;
+    @Override
+    public long getTimestamp() { return timestamp; }
+
+    @Override
+    public IServerUser getServerUser() { return user; }
+
+    public static String getSessionFromCookie(String cookie) {
+        return cookie.split("=")[1];
     }
+
+    @Override
+    public boolean isValid(IClock clock) { return clock.getTimestamp() - this.timestamp < expirationTime; }
 }

@@ -8,8 +8,11 @@ import org.simple.server.model.repository.ServerRepository;
  */
 public class RunContext extends Context {
 
+    // System clock
+    protected IClock systemClock = new SystemClock();
+
     // Server user store
-    protected IServerRepository repository = new ServerRepository("admin", "admin", new SystemClock());
+    protected IServerRepository repository = new ServerRepository("admin", "admin", systemClock);
 
     // Server realm
     protected String realm = "simple-server";
@@ -27,6 +30,9 @@ public class RunContext extends Context {
             public String getRealm() {
                 return realm;
             }
+
+            @Override
+            public IClock getClock() { return systemClock; }
         };
     }
 }

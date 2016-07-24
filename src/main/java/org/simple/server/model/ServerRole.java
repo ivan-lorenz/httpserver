@@ -1,5 +1,7 @@
 package org.simple.server.model;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 /*
@@ -11,6 +13,13 @@ public enum ServerRole {
     PAGE2("PAGE_2"),
     PAGE3("PAGE_3"),
     ADMIN("ADMIN");
+
+    public static List<ServerRole> all = new ArrayList<ServerRole>(){{
+        add(PAGE1);
+        add(PAGE2);
+        add(PAGE3);
+        add(ADMIN);
+    }};
 
     private final String value;
 

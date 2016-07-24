@@ -6,6 +6,7 @@ import com.sun.net.httpserver.HttpServer;
 import org.simple.server.controller.ServerAuthenticator;
 import org.simple.server.controller.ServerHandler;
 import org.simple.server.controller.action.*;
+import org.simple.server.model.ServerRole;
 import org.simple.server.model.repository.IServerRepository;
 import org.simple.server.model.repository.ServerRepository;
 
@@ -29,16 +30,20 @@ public abstract class Context {
     // We map a URI path and method with a concrete action controller
     private Map<String, ServerScope> routerConfiguration =
         new HashMap<String, ServerScope>() {{
-            put("GET/login.html", new ServerScope(ServerAction.LOGIN, true));
-            put("GET/page[1-3]{1}.html$", new ServerScope(ServerAction.PAGE, false));
-            put("POST/authorize$", new ServerScope(ServerAction.AUTHORIZE, true));
-            put("(POST|DELETE|PUT)/api/user/(.+)", new ServerScope(ServerAction.USERAPI, false));
+            put("GET/login.html", new ServerScope(ServerAction.LOGIN, true, ServerRole.all));
+            put("GET/page1.html$", new ServerScope(ServerAction.PAGE, false, ServerRole.PAGE1));
+            put("GET/page2.html$", new ServerScope(ServerAction.PAGE, false, ServerRole.PAGE2));
+            put("GET/page3.html$", new ServerScope(ServerAction.PAGE, false, ServerRole.PAGE3));
+            put("POST/authorize$", new ServerScope(ServerAction.AUTHORIZE, true, ServerRole.all));
+            put("(POST|DELETE|PUT)/api/user/(.+)", new ServerScope(ServerAction.USERAPI, false, ServerRole.ADMIN));
+            put("GET/api/user/(.+)", new ServerScope(ServerAction.USERAPI, false, ServerRole.ADMIN));
         }};
 
     // Interface to supply context that subclasses must implement.
     protected interface ISupplyContext {
         IServerRepository getRepository();
         String getRealm();
+        IClock getClock();
     }
 
     // Context subclasses need to supply specific context, ex. Run or Test
@@ -50,7 +55,7 @@ public abstract class Context {
         server = HttpServer.create(new InetSocketAddress(8001), 0);
         IServerRouter router = new ServerRouter(routerConfiguration);
         HttpContext context = server.createContext("/", new ServerHandler(new ServerActionFactory(router,supplyContext().getRepository())));
-        context.setAuthenticator(new ServerAuthenticator(router,supplyContext().getRealm(), supplyContext().getRepository()));
+        context.setAuthenticator(new ServerAuthenticator(router,supplyContext().getRealm(), supplyContext().getRepository(), supplyContext().getClock()));
         server.setExecutor(null);
         server.start();
     }

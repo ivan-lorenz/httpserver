@@ -8,17 +8,18 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.junit.After;
 import org.junit.Before;
 import org.simple.server.application.Context;
+import org.simple.server.application.IClock;
 import org.simple.server.model.ServerRole;
 import org.simple.server.model.repository.IServerRepository;
 import org.simple.server.model.repository.ServerRepository;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Map;
 
 class TestContext extends Context {
 
-    static IServerRepository repository = new ServerRepository("admintest", "admintest", new TestClock());
+    static IClock testClock = new TestClock();
+    static IServerRepository repository = new ServerRepository("admintest", "admintest", testClock);
     static private String realm = "test-realm";
 
     @Override
@@ -33,6 +34,11 @@ class TestContext extends Context {
             @Override
             public String getRealm() {
                 return realm;
+            }
+
+            @Override
+            public IClock getClock() {
+                return testClock;
             }
         };
     }
@@ -49,6 +55,9 @@ class TestContext extends Context {
             switch (method) {
                 case "GET":
                     request = new HttpGet(uri);
+                    if (null != headers && !headers.isEmpty())
+                        for (Map.Entry<String, String> h : headers.entrySet())
+                            request.addHeader(h.getKey(), h.getValue());
                     break;
                 case "POST":
                     request = new HttpPost(uri);

@@ -5,6 +5,7 @@ import org.apache.http.util.EntityUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.simple.server.model.IServerSession;
 import org.simple.server.model.ServerRole;
 import org.simple.server.model.ServerUser;
 
@@ -81,5 +82,16 @@ public class SimpleServerSpec extends TestContext {
         assertTrue(response.getFirstHeader("Set-Cookie").getValue().contains("SESSION="));
     }
 
+    @Test
+    public void shouldAccessPage1() throws IOException {
+        repository.createUser("user1","user1", ServerRole.PAGE1);
+        IServerSession session = repository.createSession(new ServerUser("user1", ServerRole.PAGE1));
+        Map<String, String> headers = new HashMap<>();
+        headers.put("Cookie", "SESSION=" + session.getSession());
+        HttpResponse response = request("page1.html", "GET", null, headers);
+
+        assertEquals(200,response.getStatusLine().getStatusCode());
+        assertTrue(EntityUtils.toString(response.getEntity()).contains("user1"));
+    }
 
 }

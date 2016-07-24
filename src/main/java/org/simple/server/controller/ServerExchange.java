@@ -52,4 +52,9 @@ public class ServerExchange implements IServerExchange {
     public void close() {
         exchange.close();
     }
+
+    @Override
+    public String getUser() {
+        return exchange.getPrincipal().getUsername();
+    }
 }

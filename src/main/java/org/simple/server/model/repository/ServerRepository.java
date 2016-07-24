@@ -66,9 +66,15 @@ public class ServerRepository implements IServerRepository {
 
     @Override
     public IServerSession createSession(IServerUser user) {
-        IServerSession session = new ServerSession(UUID.randomUUID().toString(), clock.getTimestamp());
-        sessionStore.put(user.getUser(), session);
+        IServerSession session = new ServerSession(user, UUID.randomUUID().toString(), clock.getTimestamp());
+        sessionStore.put(session.getSession(), session);
         return session;
+    }
+
+    @Override
+    public Optional<IServerSession> getSession(String session) {
+        IServerSession success = sessionStore.get(session);
+        return null != success ? Optional.of(success) : Optional.empty();
     }
 
     @Override

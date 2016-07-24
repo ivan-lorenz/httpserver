@@ -17,6 +17,7 @@ public interface IServerRepository {
     Optional<IServerUser> deleteUser(String user);
     Optional<IServerUser> updateUser(String user, List<ServerRole> roles);
     IServerSession createSession(IServerUser user);
+    Optional<IServerSession> getSession(String session);
     void deleteAll();
 
     // Default methods
