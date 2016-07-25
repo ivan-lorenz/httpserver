@@ -28,12 +28,14 @@ All the authenticated users can also read the REST API:
 You need [Maven](https://maven.apache.org/download.cgi) to launch tests, compile and build the jar. And obviously the JVM. The application targets Java 1.8. You can download JAVA 8 SE [here](http://www.oracle.com/technetwork/java/javase/downloads/index.html).
 
 To pass the tests, compile and build the jar, once in the project directory, type:
-$ mvn test
-$ mvn compile
-$ mvn jar:jar
+
+* $ mvn test
+* $ mvn compile
+* $ mvn jar:jar
 
 You will find the jar located at "target" directory, named "test-web-application.jar". You can launch the server with an argument for the port to bind like this:
-$ java -jar target/test-web-application.jar 8001
+
+* $ java -jar target/test-web-application.jar 8001
 
 ## Design considerations
 
