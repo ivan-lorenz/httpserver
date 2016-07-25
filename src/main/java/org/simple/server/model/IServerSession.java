@@ -6,4 +6,5 @@ public interface IServerSession {
     IServerUser getServerUser();
     String getSession();
     boolean isValid(IClock clock);
+    IServerSession keepAlive(IClock clock);
 }

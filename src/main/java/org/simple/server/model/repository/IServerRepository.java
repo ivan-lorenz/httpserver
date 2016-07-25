@@ -20,6 +20,7 @@ public interface IServerRepository {
     IServerSession createSession(IServerUser user);
     Optional<IServerSession> getSession(String session);
     Optional<IServerSession> closeSession(String session);
+    void keepAliveSession(IServerSession session);
     void deleteAll();
 
     // Default methods

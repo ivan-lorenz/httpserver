@@ -93,6 +93,11 @@ public class ServerRepository implements IServerRepository {
     }
 
     @Override
+    public void keepAliveSession(IServerSession session) {
+        sessionStore.put(session.getSession(), session.keepAlive(clock));
+    }
+
+    @Override
     public void deleteAll() {
         userStore.clear();
     }

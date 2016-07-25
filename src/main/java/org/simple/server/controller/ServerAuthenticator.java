@@ -107,7 +107,11 @@ public class ServerAuthenticator extends Authenticator {
                         boolean validRole = router.get(e)
                                 .map(scope -> scope.isValidRole(session.getServerUser().getRoles()))
                                 .orElse(false);
-                        return session.isValid(clock) && validRole ? new Success(new HttpPrincipal(session.getServerUser().getUser(), realm)) : new Failure(403);
+                        if (session.isValid(clock) && validRole) {
+                            repository.keepAliveSession(session);
+                            return new Success(new HttpPrincipal(session.getServerUser().getUser(), realm));
+                        } else
+                            return new Failure(403);
                     }).orElse(new Failure(403));
         }
 

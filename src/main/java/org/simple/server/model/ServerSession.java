@@ -33,4 +33,9 @@ public class ServerSession implements IServerSession {
 
     @Override
     public boolean isValid(IClock clock) { return clock.getTimestamp() - this.timestamp < expirationTime; }
+
+    @Override
+    public IServerSession keepAlive(IClock clock) {
+        return new ServerSession(user, session, clock.getTimestamp());
+    }
 }

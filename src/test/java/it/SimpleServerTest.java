@@ -10,6 +10,7 @@ import org.simple.server.model.IServerUser;
 import org.simple.server.model.ServerRole;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -112,11 +113,32 @@ public class SimpleServerTest extends TestContext {
         Map<String, String> headers = new HashMap<>();
         headers.put("Cookie", "SESSION=" + session.getSession());
 
-        // 300000 ms are 5 minutes which is the expiration time for a session
-        testClock.setTime(testClock.getTimestamp() + 300000);
+        // 5 minutes is the expiration time for a session
+        // So after 5 minutes...
+        testClock.setTime(testClock.getTimestamp() + Duration.ofMinutes(5).toMillis());
         HttpResponse response = request("page1.html", "GET", null, headers);
 
         assertEquals(403,response.getStatusLine().getStatusCode());
+    }
+
+    @Test
+    public void shouldKeepSessionOnActivity() throws IOException {
+        IServerUser user = repository.createUser("user1","user1", ServerRole.PAGE1);
+        IServerSession session = repository.createSession(user);
+        Map<String, String> headers = new HashMap<>();
+        headers.put("Cookie", "SESSION=" + session.getSession());
+
+        // After 3 minutes we have activity for the same user...
+        testClock.setTime(testClock.getTimestamp() + Duration.ofMinutes(3).toMillis());
+        HttpResponse response1 = request("page1.html", "GET", null, headers);
+
+        assertEquals(200,response1.getStatusLine().getStatusCode());
+
+        // And the after 4 minutes more, the session should not be expired...
+        testClock.setTime(testClock.getTimestamp() + Duration.ofMinutes(4).toMillis());
+        HttpResponse response2 = request("page1.html", "GET", null, headers);
+
+        assertEquals(200,response2.getStatusLine().getStatusCode());
     }
 
     @Test
