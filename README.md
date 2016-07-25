@@ -1,6 +1,6 @@
 # httpserver
 
-Simple web server based on [com.sun.net.httpserver](http://docs.oracle.com/javase/8/docs/jre/api/net/httpserver/spec/com/sun/net/httpserver/package-summary.html). 
+Simple web server based on [com.sun.net.httpserver](http://docs.oracle.com/javase/8/docs/jre/api/net/httpserver/spec/com/sun/net/httpserver/package-summary.html). This is an exercise of a web server implementation using only JAVA SE 8 classes. Only tests have external dependencies which are [JUnit]() and [Apache HttpClient](). 
 
 ## Description
 
@@ -19,6 +19,10 @@ There is also a REST API at endpoint /api/user. The administrator user can creat
 * **PUT** /api/user/user4?role=PAGE_3
 * **DELETE** /api/user/user4 
 
+All the authenticated users can also read the REST API:
+
+* **GET** /api/user/user4
+
 ## Installation
 
 You need [Maven](https://maven.apache.org/download.cgi) to launch tests, compile and build the jar. And obviously the JVM. The application targets Java 1.8. You can download JAVA 8 SE [here](http://www.oracle.com/technetwork/java/javase/downloads/index.html).
@@ -35,11 +39,11 @@ $ java -jar target/test-web-application.jar 8001
 
 Simple web server is a week-end training exercise where to apply the common design patterns for a web application. It is also a work in progress with some "TODO" left for future sessions.
 
-The core pattern for the application is a [Model-View-Controller Pattern](http://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller) with the views as static resources. The main handler ServerHandler is an [HttpHandler](http://docs.oracle.com/javase/8/docs/jre/api/net/httpserver/spec/com/sun/net/httpserver/HttpHandler.html) and implements a [Mediator Pattern](https://en.wikipedia.org/wiki/Mediator_pattern).
+The core pattern for the application is a [Model-View-Controller Pattern](http://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller) with the views as static resources. I used TDD to implement the solution, mainly integration more than unit testing due to the nature of classes and methods. All the classes dependencies are handled manually by a Dependency Injection Container implemented in the Context, RunContext and TestContext classes, which is a must if you want to drive your development with TDD and inject mocks and different configurations for testing purposes. See the usage of IClock interface both in Test and Run configuration to investigate an example of that. 
 
-There is also a ServerAction for each controller action. ServerAction follows [Strategy Pattern](https://en.wikipedia.org/wiki/Strategy_pattern) and its creation is left to a ServerActionFactory.
- 
-These are mainly the most important patterns used. A lot of refactor is needed to get rid of [Arrow code anti-pattern](http://c2.com/cgi/wiki?ArrowAntiPattern).
+The main controller (Front Controller) ServerHandler is an [HttpHandler](http://docs.oracle.com/javase/8/docs/jre/api/net/httpserver/spec/com/sun/net/httpserver/HttpHandler.html) and implements a [Mediator Pattern](https://en.wikipedia.org/wiki/Mediator_pattern). There is also a ServerAction for each controller action. ServerAction follows [Strategy Pattern](https://en.wikipedia.org/wiki/Strategy_pattern) and its creation is left to a ServerActionFactory. This factory uses a router class, ServerRouter, which maps all the endpoints to the appropriate ServerAction and stores access rights for each endpoint. These are mainly the most important patterns used.
 
-And also a best use of Java 8 Optional type, which is difficult to use for side effects when only we have "ifPresent" implemented and not "ifNotPresent" which will arrive in Java 9. The lifecycle of [HttpExchange](http://docs.oracle.com/javase/8/docs/jre/api/net/httpserver/spec/com/sun/net/httpserver/HttpExchange.html) across the application leave to few room for immutability and functional programming, but I have tried to use Optional and lambdas when possible, if they made the code cleaner. Maybe sometimes I achieve just the opposite. So that is why we need to continue refactoring.
+We manage authorization through an [Authenticator](), which is a proprietary class of com.sun.net.httpserver package. We implement a class named ServerAuthenticator which extends Authenticator and manage all the roles and access rights for the web server using also ServerRouter. We manage session cookies for the static web pages and Basic Authentication for the REST API.
+
+A lot of refactor is already needed to get rid of [Arrow code anti-pattern](http://c2.com/cgi/wiki?ArrowAntiPattern) scattered through the action classes and also to honor Single Responsibility Principle for some classes like ServerRouter, which is managing both the endpoint mapping to actions and the access rights. Also a best use of Java 8 Optional type, which is difficult to use if you have to deal with side effects, when only we have "ifPresent" implemented and not "ifNotPresent" which will arrive in Java 9. The lifecycle of [HttpExchange](http://docs.oracle.com/javase/8/docs/jre/api/net/httpserver/spec/com/sun/net/httpserver/HttpExchange.html) (which is a mutable class encapsulating both the request and the response) across the application leave to few room for immutability and functional programming, but I have tried to use Optional and lambdas when possible, where they make a cleaner code. Maybe sometimes I achieve just the opposite. 
 
